@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "building-admin-dashboard-customizations": {
+      "source": "medusajs/medusa-agent-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/medusa-dev/skills/building-admin-dashboard-customizations/SKILL.md",
+      "computedHash": "fdf61048a7c3872c70a16861c8bb3e5cf9973a04d55b97139cd49e352fa3f82c"
+    },
+    "building-storefronts": {
+      "source": "medusajs/medusa-agent-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/medusa-dev/skills/building-storefronts/SKILL.md",
+      "computedHash": "cdd94d4637a988d7e708ef9df9109b308d0e8cfe8fb602565301d045102bca43"
+    }
+  }
+}

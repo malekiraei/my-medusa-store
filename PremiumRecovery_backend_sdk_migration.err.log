@@ -1,0 +1,5 @@
+• turbo 2.10.0
+ WARNING  An issue occurred while attempting to parse C:\Users\H.M\my-medusa-store\pnpm-lock.yaml. Turborepo will still function, but some features may not be available:
+   x Could not resolve workspaces.
+  `-> Lockfile not found at C:\Users\H.M\my-medusa-store\pnpm-lock.yaml
+

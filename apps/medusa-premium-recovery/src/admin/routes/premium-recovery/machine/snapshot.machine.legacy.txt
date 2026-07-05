@@ -1,0 +1,231 @@
+// ============================================================
+// Snapshot Machine - FSM-Based State Management
+// ✅ State machine for snapshot creation wizard
+// ============================================================
+
+import { createMachine, assign, fromPromise } from 'xstate'
+
+// ============================================================
+// Types
+// ============================================================
+
+export type SnapshotState =
+  | 'idle'
+  | 'loading'
+  | 'ready'
+  | 'empty'
+  | 'selecting'
+  | 'metadata'
+  | 'review'
+  | 'creating'
+  | 'done'
+  | 'error'
+
+export type SnapshotEvent =
+  | { type: 'OPEN' }
+  | { type: 'CLOSE' }
+  | { type: 'NEXT' }
+  | { type: 'BACK' }
+  | { type: 'CREATE' }
+  | { type: 'RETRY' }
+  | { type: 'TOGGLE_FILE'; path: string }
+  | { type: 'SELECT_ALL' }
+  | { type: 'SET_NAME'; name: string }
+  | { type: 'SET_DESCRIPTION'; description: string }
+  | { type: 'SET_BUSINESS_CONTEXT'; context: string }
+  | { type: 'SET_USE_CASE'; useCase: string }
+
+export type SnapshotContext = {
+  files: any[]
+  selectedFiles: string[]
+  name: string
+  description: string
+  businessContext: string
+  useCase: string
+  error: string | null
+}
+
+// ============================================================
+// 🧠 FSM Machine
+// ============================================================
+
+export const createSnapshotMachine = (services: {
+  fetchFiles: () => Promise<any[]>
+  createSnapshot: (data: any) => Promise<void>
+}) => {
+  return createMachine({
+    id: 'snapshot',
+    initial: 'idle',
+    context: {
+      files: [],
+      selectedFiles: [],
+      name: '',
+      description: '',
+      businessContext: '',
+      useCase: 'manual',
+      error: null,
+    } as SnapshotContext,
+    types: {} as {
+      context: SnapshotContext
+      events: SnapshotEvent
+    },
+    states: {
+      idle: {
+        on: {
+          OPEN: 'loading',
+        },
+      },
+
+      loading: {
+        invoke: {
+          src: fromPromise(async () => {
+            return await services.fetchFiles()
+          }),
+          onDone: {
+            target: 'selecting',
+            actions: assign({
+              files: ({ event }: any) => event.output,
+            }),
+          },
+          onError: {
+            target: 'error',
+            actions: assign({
+              error: ({ event }: any) => event.error?.message || 'خطا در دریافت فایل‌ها',
+            }),
+          },
+        },
+      },
+
+      ready: {
+        entry: assign({
+          files: ({ context }: any) => context.files,
+        }),
+        always: {
+          target: 'selecting',
+        },
+        on: {
+          CLOSE: 'idle',
+        },
+      },
+
+      empty: {
+        on: {
+          NEXT: 'selecting',
+          CLOSE: 'idle',
+        },
+      },
+
+      selecting: {
+        on: {
+          TOGGLE_FILE: {
+            actions: assign({
+              selectedFiles: ({ context, event }: any) => {
+                const path = event.path
+                const exists = context.selectedFiles.includes(path)
+                return exists
+                  ? context.selectedFiles.filter((p: string) => p !== path)
+                  : [...context.selectedFiles, path]
+              },
+            }),
+          },
+          SELECT_ALL: {
+            actions: assign({
+              selectedFiles: ({ context }: any) => {
+                const allSelected = context.selectedFiles.length === context.files.length
+                return allSelected ? [] : context.files.map((f: any) => f.path)
+              },
+            }),
+          },
+          NEXT: {
+            target: 'metadata',
+            guard: ({ context }: any) => context.selectedFiles.length > 0,
+          },
+          CLOSE: 'idle',
+        },
+      },
+
+      metadata: {
+        on: {
+          SET_NAME: {
+            actions: assign({
+              name: ({ event }: any) => event.name,
+            }),
+          },
+          SET_DESCRIPTION: {
+            actions: assign({
+              description: ({ event }: any) => event.description,
+            }),
+          },
+          SET_BUSINESS_CONTEXT: {
+            actions: assign({
+              businessContext: ({ event }: any) => event.context,
+            }),
+          },
+          SET_USE_CASE: {
+            actions: assign({
+              useCase: ({ event }: any) => event.useCase,
+            }),
+          },
+          NEXT: {
+            target: 'review',
+            guard: ({ context }: any) => context.name.trim().length > 0,
+          },
+          BACK: 'selecting',
+          CLOSE: 'idle',
+        },
+      },
+
+      review: {
+        on: {
+          CREATE: {
+            target: 'creating',
+          },
+          BACK: 'metadata',
+          CLOSE: 'idle',
+        },
+      },
+
+      creating: {
+        invoke: {
+          src: fromPromise(async ({ context }: any) => {
+            await services.createSnapshot({
+              name: context.name,
+              description: context.description,
+              businessContext: context.businessContext,
+              useCase: context.useCase,
+              files: context.selectedFiles,
+            })
+          }),
+          onDone: {
+            target: 'done',
+          },
+          onError: {
+            target: 'error',
+            actions: assign({
+              error: ({ event }: any) => event.error?.message || 'خطا در ایجاد اسنپ‌شات',
+            }),
+          },
+        },
+      },
+
+      done: {
+        on: {
+          CLOSE: 'idle',
+        },
+      },
+
+      error: {
+        on: {
+          RETRY: 'loading',
+          CLOSE: 'idle',
+        },
+      },
+    },
+  })
+}
+
+// ============================================================
+// 🎯 Types for useSnapshotMachine
+// ============================================================
+
+export type SnapshotMachine = ReturnType<typeof createSnapshotMachine>

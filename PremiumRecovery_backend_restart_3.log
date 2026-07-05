@@ -1,0 +1,125 @@
+
+> @dtc/backend@0.0.1 dev
+> medusa develop
+
+[32minfo[39m:    redisUrl not found. A fake redis instance will be used.
+[32minfo[39m:    Linting project...
+[32minfo[39m:    [Watcher] Using standard dev server (restart on file change)
+[32minfo[39m:    [Watcher] Watching filesystem to reload dev server on file change
+[32minfo[39m:    redisUrl not found. A fake redis instance will be used.
+- Creating server
+[32minfo[39m:    redisUrl not found. A fake redis instance will be used.
+[32minfo[39m:    Skipping instrumentation registration. No register function found.
+[32minfo[39m:    redisUrl not found. A fake redis instance will be used.
+[32minfo[39m:    No link to load from C:\Users\H.M\my-medusa-store\node_modules\@medusajs\draft-order\.medusa\server\src\links. skipped.
+[32minfo[39m:    No link to load from C:\Users\H.M\my-medusa-store\apps\medusa-premium-recovery\.medusa\server\src\links. skipped.
+[33mwarn[39m:    Local Event Bus installed. This is not recommended for production.
+[32minfo[39m:    Locking module: Using "in-memory" as default.
+[32minfo[39m:    No workflow to load from C:\Users\H.M\my-medusa-store\node_modules\@medusajs\draft-order\.medusa\server\src\workflows. skipped.
+[32minfo[39m:    No workflow to load from C:\Users\H.M\my-medusa-store\apps\medusa-premium-recovery\.medusa\server\src\workflows. skipped.
+[32minfo[39m:    No subscriber to load from C:\Users\H.M\my-medusa-store\node_modules\@medusajs\draft-order\.medusa\server\src\subscribers. skipped.
+[32minfo[39m:    No subscriber to load from C:\Users\H.M\my-medusa-store\apps\medusa-premium-recovery\.medusa\server\src\subscribers. skipped.
+[32minfo[39m:    No job to load from C:\Users\H.M\my-medusa-store\node_modules\@medusajs\medusa\dist\jobs. skipped.
+[32minfo[39m:    No job to load from C:\Users\H.M\my-medusa-store\node_modules\@medusajs\draft-order\.medusa\server\src\jobs. skipped.
+[32minfo[39m:    No job to load from C:\Users\H.M\my-medusa-store\apps\medusa-premium-recovery\.medusa\server\src\jobs. skipped.
+√ Server is ready on port: 9000 – 15019ms
+[32minfo[39m:    Admin URL → http://localhost:9000/app
+[32mhttp[39m:    GET /app/premium-recovery ← http://localhost:9000/app/premium-recovery (200) - 63.041 ms
+[32mhttp[39m:    GET /app/entry.jsx ← http://localhost:9000/app/premium-recovery (200) - 1146.848 ms
+[32mhttp[39m:    GET /app/index.css ← http://localhost:9000/app/entry.jsx (200) - 7780.358 ms
+[32mhttp[39m:    GET /admin/feature-flags ← http://localhost:9000/app/premium-recovery (304) - 19.756 ms
+[32mhttp[39m:    GET /admin/users/me ← http://localhost:9000/app/premium-recovery (401) - 6.222 ms
+[32mhttp[39m:    GET /admin/users/me ← http://localhost:9000/app/premium-recovery (401) - 3.464 ms
+[32mhttp[39m:    GET /cloud/auth ← http://localhost:9000/app/login (304) - 24.796 ms
+[32mhttp[39m:    POST /auth/user/emailpass ← http://localhost:9000/app/login (200) - 283.051 ms
+[32mhttp[39m:    POST /auth/session ← http://localhost:9000/app/login (200) - 12.768 ms
+[32mhttp[39m:    GET /admin/users/me ← http://localhost:9000/app/premium-recovery (304) - 16.036 ms
+[32mhttp[39m:    GET /admin/premium-recovery/bundles ← http://localhost:9000/app/premium-recovery (304) - 8.789 ms
+[32mhttp[39m:    GET /admin/notifications?limit=1&offset=0&fields=created_at ← http://localhost:9000/app/premium-recovery (304) - 43.078 ms
+[32mhttp[39m:    GET /admin/premium-recovery/restore-points ← http://localhost:9000/app/premium-recovery (304) - 116.581 ms
+[32mhttp[39m:    GET /admin/stores ← http://localhost:9000/app/premium-recovery (304) - 97.160 ms
+[32mhttp[39m:    GET /admin/products?q=&limit=3&fields=id%2Ctitle%2Cthumbnail%2C-type%2C-collection%2C-options%2C-tags%2C-images%2C-variants%2C-sales_channels ← http://localhost:9000/app/premium-recovery (304) - 126.711 ms
+[32mhttp[39m:    GET /admin/premium-recovery/git-changes ← http://localhost:9000/app/premium-recovery (-) - - ms
+[32mhttp[39m:    GET /admin/orders?q=&limit=3&fields=id%2Cdisplay_id%2Cemail ← http://localhost:9000/app/premium-recovery (304) - 191.740 ms
+[32mhttp[39m:    GET /admin/product-variants?q=&limit=3&fields=id%2Ctitle%2Csku%2Cproduct_id ← http://localhost:9000/app/premium-recovery (304) - 163.418 ms
+[32mhttp[39m:    GET /admin/product-categories?limit=3&fields=id%2Cname ← http://localhost:9000/app/premium-recovery (304) - 84.542 ms
+[32mhttp[39m:    GET /admin/collections?q=&limit=3&fields=id%2Ctitle ← http://localhost:9000/app/premium-recovery (304) - 43.497 ms
+[32mhttp[39m:    GET /admin/customers?q=&limit=3&fields=id%2Cemail%2Cfirst_name%2Clast_name ← http://localhost:9000/app/premium-recovery (304) - 44.253 ms
+[32mhttp[39m:    GET /admin/customer-groups?q=&limit=3&fields=id%2Cname ← http://localhost:9000/app/premium-recovery (304) - 116.231 ms
+[32mhttp[39m:    GET /admin/inventory-items?q=&limit=3&fields=id%2Ctitle%2Csku ← http://localhost:9000/app/premium-recovery (304) - 86.506 ms
+[32mhttp[39m:    GET /admin/promotions?q=&limit=3&fields=id%2Ccode%2Cstatus ← http://localhost:9000/app/premium-recovery (304) - 144.628 ms
+[32mhttp[39m:    GET /admin/campaigns?q=&limit=3&fields=id%2Cname ← http://localhost:9000/app/premium-recovery (304) - 76.142 ms
+[32mhttp[39m:    GET /admin/price-lists?q=&limit=3&fields=id%2Ctitle ← http://localhost:9000/app/premium-recovery (304) - 24.585 ms
+[32mhttp[39m:    GET /admin/users?q=&limit=3&fields=id%2Cemail%2Cfirst_name%2Clast_name ← http://localhost:9000/app/premium-recovery (304) - 74.495 ms
+[32mhttp[39m:    GET /admin/regions?q=&limit=3&fields=id%2Cname ← http://localhost:9000/app/premium-recovery (304) - 58.394 ms
+[32mhttp[39m:    GET /admin/tax-regions?q=&limit=3&fields=id%2Ccountry_code%2Cprovince_code ← http://localhost:9000/app/premium-recovery (304) - 83.418 ms
+[32mhttp[39m:    GET /admin/return-reasons?q=&limit=3&fields=id%2Clabel%2Cvalue ← http://localhost:9000/app/premium-recovery (304) - 35.849 ms
+[32mhttp[39m:    GET /admin/sales-channels?q=&limit=3&fields=id%2Cname ← http://localhost:9000/app/premium-recovery (304) - 34.717 ms
+[32mhttp[39m:    GET /admin/product-types?q=&limit=3&fields=id%2Cvalue ← http://localhost:9000/app/premium-recovery (304) - 35.555 ms
+[32mhttp[39m:    GET /admin/product-tags?q=&limit=3&fields=id%2Cvalue ← http://localhost:9000/app/premium-recovery (304) - 37.928 ms
+[32mhttp[39m:    GET /admin/stock-locations?q=&limit=3&fields=id%2Cname ← http://localhost:9000/app/premium-recovery (304) - 39.369 ms
+[32mhttp[39m:    GET /admin/shipping-profiles?q=&limit=3&fields=id%2Cname ← http://localhost:9000/app/premium-recovery (304) - 39.844 ms
+[32mhttp[39m:    GET /admin/premium-recovery/bundles ← http://localhost:9000/app/premium-recovery (304) - 14.936 ms
+[32mhttp[39m:    GET /admin/premium-recovery/restore-points ← http://localhost:9000/app/premium-recovery (304) - 15.850 ms
+[32mhttp[39m:    GET /admin/api-keys?q=&limit=3&fields=id%2Ctitle%2Credacted&type=publishable ← http://localhost:9000/app/premium-recovery (304) - 159.171 ms
+[32mhttp[39m:    GET /admin/api-keys?q=&limit=3&fields=id%2Ctitle%2Credacted&type=secret ← http://localhost:9000/app/premium-recovery (304) - 144.401 ms
+[32mhttp[39m:    GET /admin/premium-recovery/status ← http://localhost:9000/app/premium-recovery (200) - 936.803 ms
+[32mhttp[39m:    GET /admin/premium-recovery/git-changes ← http://localhost:9000/app/premium-recovery (200) - 917.186 ms
+[32mhttp[39m:    GET /admin/premium-recovery/status ← http://localhost:9000/app/premium-recovery (304) - 238.951 ms
+[32mhttp[39m:    GET /admin/notifications?limit=1&offset=0&fields=created_at ← http://localhost:9000/app/premium-recovery (304) - 40.292 ms
+[32mhttp[39m:    GET /admin/notifications?limit=1&offset=0&fields=created_at ← http://localhost:9000/app/premium-recovery (304) - 24.533 ms
+[32mhttp[39m:    GET /admin/premium-recovery/git-changes ← http://localhost:9000/app/premium-recovery (200) - 231.414 ms
+[32mhttp[39m:    POST /admin/premium-recovery/restore-points ← http://localhost:9000/app/premium-recovery (201) - 103.915 ms
+[32mhttp[39m:    GET /admin/premium-recovery/restore-points ← http://localhost:9000/app/premium-recovery (200) - 25.204 ms
+[32mhttp[39m:    GET /admin/notifications?limit=1&offset=0&fields=created_at ← http://localhost:9000/app/premium-recovery (304) - 13.003 ms
+[32mhttp[39m:    GET /app/premium-recovery ← http://localhost:9000/app/premium-recovery (200) - 9.259 ms
+[32mhttp[39m:    GET /app/entry.jsx ← http://localhost:9000/app/premium-recovery (200) - 3.230 ms
+[32mhttp[39m:    GET /app/index.css ← http://localhost:9000/app/entry.jsx (200) - 31.163 ms
+[32mhttp[39m:    GET /admin/feature-flags ← http://localhost:9000/app/premium-recovery (304) - 3.865 ms
+[32mhttp[39m:    GET /admin/users/me ← http://localhost:9000/app/premium-recovery (304) - 10.080 ms
+[32mhttp[39m:    GET /admin/premium-recovery/bundles ← http://localhost:9000/app/premium-recovery (304) - 5.778 ms
+[32mhttp[39m:    GET /admin/premium-recovery/restore-points ← http://localhost:9000/app/premium-recovery (304) - 161.957 ms
+[32mhttp[39m:    GET /admin/notifications?limit=1&offset=0&fields=created_at ← http://localhost:9000/app/premium-recovery (304) - 57.669 ms
+[32mhttp[39m:    GET /admin/stores ← http://localhost:9000/app/premium-recovery (304) - 214.545 ms
+[32mhttp[39m:    GET /admin/products?q=&limit=3&fields=id%2Ctitle%2Cthumbnail%2C-type%2C-collection%2C-options%2C-tags%2C-images%2C-variants%2C-sales_channels ← http://localhost:9000/app/premium-recovery (304) - 119.054 ms
+[32mhttp[39m:    GET /admin/orders?q=&limit=3&fields=id%2Cdisplay_id%2Cemail ← http://localhost:9000/app/premium-recovery (304) - 156.255 ms
+[32mhttp[39m:    GET /admin/premium-recovery/git-changes ← http://localhost:9000/app/premium-recovery (-) - - ms
+[32mhttp[39m:    GET /admin/product-categories?limit=3&fields=id%2Cname ← http://localhost:9000/app/premium-recovery (304) - 69.061 ms
+[32mhttp[39m:    GET /admin/customers?q=&limit=3&fields=id%2Cemail%2Cfirst_name%2Clast_name ← http://localhost:9000/app/premium-recovery (304) - 59.075 ms
+[32mhttp[39m:    GET /admin/product-variants?q=&limit=3&fields=id%2Ctitle%2Csku%2Cproduct_id ← http://localhost:9000/app/premium-recovery (304) - 136.506 ms
+[32mhttp[39m:    GET /admin/collections?q=&limit=3&fields=id%2Ctitle ← http://localhost:9000/app/premium-recovery (304) - 74.187 ms
+[32mhttp[39m:    GET /admin/customer-groups?q=&limit=3&fields=id%2Cname ← http://localhost:9000/app/premium-recovery (304) - 58.251 ms
+[32mhttp[39m:    GET /admin/inventory-items?q=&limit=3&fields=id%2Ctitle%2Csku ← http://localhost:9000/app/premium-recovery (304) - 76.269 ms
+[32mhttp[39m:    GET /admin/promotions?q=&limit=3&fields=id%2Ccode%2Cstatus ← http://localhost:9000/app/premium-recovery (304) - 30.121 ms
+[32mhttp[39m:    GET /admin/campaigns?q=&limit=3&fields=id%2Cname ← http://localhost:9000/app/premium-recovery (304) - 47.070 ms
+[32mhttp[39m:    GET /admin/price-lists?q=&limit=3&fields=id%2Ctitle ← http://localhost:9000/app/premium-recovery (304) - 91.218 ms
+[32mhttp[39m:    GET /admin/users?q=&limit=3&fields=id%2Cemail%2Cfirst_name%2Clast_name ← http://localhost:9000/app/premium-recovery (304) - 33.139 ms
+[32mhttp[39m:    GET /admin/regions?q=&limit=3&fields=id%2Cname ← http://localhost:9000/app/premium-recovery (304) - 52.298 ms
+[32mhttp[39m:    GET /admin/premium-recovery/bundles ← http://localhost:9000/app/premium-recovery (304) - 6.821 ms
+[32mhttp[39m:    GET /admin/tax-regions?q=&limit=3&fields=id%2Ccountry_code%2Cprovince_code ← http://localhost:9000/app/premium-recovery (304) - 53.243 ms
+[32mhttp[39m:    GET /admin/return-reasons?q=&limit=3&fields=id%2Clabel%2Cvalue ← http://localhost:9000/app/premium-recovery (304) - 38.417 ms
+[32mhttp[39m:    GET /admin/sales-channels?q=&limit=3&fields=id%2Cname ← http://localhost:9000/app/premium-recovery (304) - 50.528 ms
+[32mhttp[39m:    GET /admin/product-types?q=&limit=3&fields=id%2Cvalue ← http://localhost:9000/app/premium-recovery (304) - 33.886 ms
+[32mhttp[39m:    GET /admin/product-tags?q=&limit=3&fields=id%2Cvalue ← http://localhost:9000/app/premium-recovery (304) - 63.969 ms
+[32mhttp[39m:    GET /admin/stock-locations?q=&limit=3&fields=id%2Cname ← http://localhost:9000/app/premium-recovery (304) - 40.712 ms
+[32mhttp[39m:    GET /admin/shipping-profiles?q=&limit=3&fields=id%2Cname ← http://localhost:9000/app/premium-recovery (304) - 31.786 ms
+[32mhttp[39m:    GET /admin/api-keys?q=&limit=3&fields=id%2Ctitle%2Credacted&type=publishable ← http://localhost:9000/app/premium-recovery (304) - 48.761 ms
+[32mhttp[39m:    GET /admin/api-keys?q=&limit=3&fields=id%2Ctitle%2Credacted&type=secret ← http://localhost:9000/app/premium-recovery (304) - 22.762 ms
+[32mhttp[39m:    GET /admin/premium-recovery/restore-points ← http://localhost:9000/app/premium-recovery (304) - 30.097 ms
+[32mhttp[39m:    GET /admin/premium-recovery/git-changes ← http://localhost:9000/app/premium-recovery (200) - 939.875 ms
+[32mhttp[39m:    GET /admin/premium-recovery/status ← http://localhost:9000/app/premium-recovery (304) - 985.173 ms
+[32mhttp[39m:    GET /admin/premium-recovery/status ← http://localhost:9000/app/premium-recovery (304) - 213.053 ms
+[32mhttp[39m:    GET /admin/notifications?limit=1&offset=0&fields=created_at ← http://localhost:9000/app/premium-recovery (304) - 15.881 ms
+[32mhttp[39m:    GET /admin/notifications?limit=1&offset=0&fields=created_at ← http://localhost:9000/app/premium-recovery (304) - 17.249 ms
+[32mhttp[39m:    GET /admin/notifications?limit=1&offset=0&fields=created_at ← http://localhost:9000/app/premium-recovery (304) - 7.037 ms
+[32mhttp[39m:    GET /admin/notifications?limit=1&offset=0&fields=created_at ← http://localhost:9000/app/premium-recovery (304) - 21.023 ms
+[32mhttp[39m:    GET /admin/notifications?limit=1&offset=0&fields=created_at ← http://localhost:9000/app/premium-recovery (304) - 10.667 ms
+[32mhttp[39m:    GET /admin/notifications?limit=1&offset=0&fields=created_at ← http://localhost:9000/app/premium-recovery (304) - 14.811 ms
+[32mhttp[39m:    GET /app/entry.jsx?t=1782911365263 ← http://localhost:9000/app/@vite/client (200) - 3.706 ms
+[2m4:39:25 PM[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to load url /@fs/C:/Users/H.M/my-medusa-store/apps/medusa-premium-recovery/.medusa/server/src/admin/index.mjs (resolved id: C:/Users/H.M/my-medusa-store/apps/medusa-premium-recovery/.medusa/server/src/admin/index.mjs) in C:/Users/H.M/my-medusa-store/apps/backend/.medusa/client/entry.jsx. Does the file exist?
+[32mhttp[39m:    GET /app/@fs/C:/Users/H.M/my-medusa-store/apps/medusa-premium-recovery/.medusa/server/src/admin/index.mjs?t=1782911365263 ← http://localhost:9000/app/entry.jsx?t=1782911365263 (404) - 3.543 ms
+[32mhttp[39m:    GET /app/index.css?t=1782911365263 ← http://localhost:9000/app/@vite/client (200) - 616.342 ms
+[32mhttp[39m:    GET /app/premium-recovery ← http://localhost:9000/app/premium-recovery (304) - 41.379 ms
+[32mhttp[39m:    GET /app/entry.jsx ← http://localhost:9000/app/premium-recovery (200) - 5.416 ms
+[32mhttp[39m:    GET /app/index.css?t=1782911365263 ← http://localhost:9000/app/entry.jsx (304) - 47.373 ms
+[32mhttp[39m:    GET /app/@fs/C:/Users/H.M/my-medusa-store/apps/medusa-premium-recovery/.medusa/server/src/admin/index.mjs?t=1782911365263 ← http://localhost:9000/app/entry.jsx (404) - 3.542 ms

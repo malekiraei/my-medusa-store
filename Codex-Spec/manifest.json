@@ -1,0 +1,14 @@
+{
+  "name": "Codex Premium Dashboard Project Specification",
+  "version": "2.0",
+  "created_utc": "2026-06-29T09:20:50.549422+00:00",
+  "workspace_to_open": "C:\\Users\\H.M\\my-medusa-store",
+  "plugin_path": "apps\\medusa-premium-recovery",
+  "backend_path": "apps\\backend",
+  "entrypoint": "PROJECT.md",
+  "primary_rules": "00_HARD_RULES.md",
+  "included_assets": [
+    "Codex_Premium_Dashboard_Project_Spec_v1.zip",
+    "Premium-Dashboard-Rewrite-Docs(2).zip"
+  ]
+}

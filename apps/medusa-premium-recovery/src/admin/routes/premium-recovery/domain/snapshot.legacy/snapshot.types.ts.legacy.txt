@@ -1,0 +1,51 @@
+// src/admin/routes/premium-recovery/domain/snapshot/snapshot.types.ts
+// ============================================================
+// Snapshot Types - مستقل از React
+// ============================================================
+
+export type SnapshotStep = "analyzing" | "selecting" | "metadata" | "review"
+
+export type SnapshotFile = {
+  path: string
+  status: "added" | "modified" | "deleted" | "renamed" | "untracked"
+  oldPath?: string
+  business_impact?: "critical" | "normal" | "low"
+}
+
+export type SnapshotContext = {
+  step: SnapshotStep
+  files: SnapshotFile[]
+  selectedFiles: string[]
+  snapshotName: string
+  snapshotDescription: string
+  snapshotBusinessContext: string
+  snapshotUseCase: "manual" | "before_update" | "before_theme_change" | "before_plugin_install"
+  isCreating: boolean
+  error: string | null
+  isFetching: boolean
+}
+
+export type SnapshotEvent =
+  | { type: "BOOT" }
+  | { type: "FETCH_SUCCESS"; files: SnapshotFile[] }
+  | { type: "FETCH_ERROR"; error: string }
+  | { type: "GO_TO_SELECTING" }
+  | { type: "GO_TO_METADATA" }
+  | { type: "GO_TO_REVIEW" }
+  | { type: "GO_BACK" }
+  | { type: "TOGGLE_FILE"; path: string }
+  | { type: "SELECT_ALL"; selected: boolean }
+  | { type: "SET_NAME"; name: string }
+  | { type: "SET_DESCRIPTION"; description: string }
+  | { type: "SET_BUSINESS_CONTEXT"; context: string }
+  | { type: "SET_USE_CASE"; useCase: SnapshotContext["snapshotUseCase"] }
+  | { type: "CREATE_START" }
+  | { type: "CREATE_SUCCESS" }
+  | { type: "CREATE_ERROR"; error: string }
+  | { type: "RESET" }
+  | { type: "CLOSE" }
+
+export type SnapshotState = {
+  context: SnapshotContext
+  value: SnapshotStep
+}

@@ -1,0 +1,24 @@
+// src/admin/routes/premium-recovery/domain/snapshot/snapshot.actions.ts
+// ============================================================
+// Snapshot Actions - CLEAN VERSION
+// ============================================================
+
+import type { SnapshotFile, SnapshotState } from "./snapshot.state"
+
+export type SnapshotAction =
+  | { type: "OPEN" }
+  | { type: "CLOSE" }
+  | { type: "RESET" }
+  | { type: "FETCH_SUCCESS"; files: SnapshotFile[] }
+  | { type: "FETCH_ERROR"; error: string }
+  | { type: "NEXT" }
+  | { type: "BACK" }
+  | { type: "TOGGLE_FILE"; path: string }
+  | { type: "SELECT_ALL" }
+  | { type: "SET_NAME"; name: string }
+  | { type: "SET_DESCRIPTION"; description: string }
+  | { type: "SET_BUSINESS_CONTEXT"; context: string }
+  | { type: "SET_USE_CASE"; useCase: SnapshotState["snapshotUseCase"] }
+  | { type: "CREATE_START" }
+  | { type: "CREATE_SUCCESS" }
+  | { type: "CREATE_ERROR"; error: string }

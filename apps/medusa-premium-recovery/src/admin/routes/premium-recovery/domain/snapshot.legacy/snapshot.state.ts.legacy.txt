@@ -1,0 +1,35 @@
+// src/admin/routes/premium-recovery/domain/snapshot/snapshot.state.ts
+// ============================================================
+// Snapshot State - CLEAN VERSION
+// ✅ فقط 5 state واقعی
+// ✅ بدون state اضافی
+// ============================================================
+
+export type SnapshotStep =
+  | "idle"
+  | "analyzing"
+  | "selecting"
+  | "metadata"
+  | "review"
+  | "done"
+  | "error"
+
+export type SnapshotFile = {
+  path: string
+  status: "added" | "modified" | "deleted" | "renamed" | "untracked"
+  oldPath?: string
+  business_impact?: "critical" | "normal" | "low"
+}
+
+export type SnapshotState = {
+  step: SnapshotStep
+  files: SnapshotFile[]
+  selectedFiles: string[]
+  error: string | null
+  isLoading: boolean
+  snapshotName: string
+  snapshotDescription: string
+  snapshotBusinessContext: string
+  snapshotUseCase: "manual" | "before_update" | "before_theme_change" | "before_plugin_install"
+  isCreating: boolean
+}

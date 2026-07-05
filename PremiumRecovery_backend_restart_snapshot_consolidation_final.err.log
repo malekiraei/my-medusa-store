@@ -1,0 +1,3 @@
+- Creating server
+√ Server is ready on port: 9000 – 13908ms
+[2m9:21:35 PM[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to load url /@fs/C:/Users/H.M/my-medusa-store/apps/medusa-premium-recovery/.medusa/server/src/admin/index.mjs (resolved id: C:/Users/H.M/my-medusa-store/apps/medusa-premium-recovery/.medusa/server/src/admin/index.mjs) in C:/Users/H.M/my-medusa-store/apps/backend/.medusa/client/entry.jsx. Does the file exist?

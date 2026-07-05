@@ -1,0 +1,15 @@
+
+> backend:dev
+> turbo dev --filter=@dtc/backend
+
+
+   • Packages in scope: @dtc/backend
+   • Running dev in 1 packages
+   • Remote caching disabled
+
+@dtc/backend:dev: cache bypass, force executing c118e71684adab66
+@dtc/backend:dev: 
+@dtc/backend:dev: > @dtc/backend@0.0.1 dev C:\Users\H.M\my-medusa-store\apps\backend
+@dtc/backend:dev: > medusa develop
+@dtc/backend:dev: 
+@dtc/backend:dev: [32minfo[39m:    redisUrl not found. A fake redis instance will be used.

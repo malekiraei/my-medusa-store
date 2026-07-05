@@ -1,0 +1,113 @@
+import React from "react"
+import { ArrowPath, ShieldCheck } from "../../../../ui/vendor/icons"
+import { PRBanner, type PRBannerTone } from "../../../../ui/components"
+
+export type SystemStatusUI = {
+  protection_level?: string
+  changed_files_count?: number
+  bundle_count?: number
+  safety_active?: boolean
+  latest_snapshot?: string | null
+}
+
+type StatusBannerProps = {
+  status: SystemStatusUI | null
+  loading?: boolean
+  onRefresh?: () => void
+}
+
+type ProtectionLevel = "protected" | "partially_protected" | "unprotected"
+
+type BannerConfig = {
+  title: string
+  badge: string
+  tone: PRBannerTone
+  description: (status: SystemStatusUI) => string
+  actionLabel: string
+  actionVariant: "secondary" | "transparent"
+}
+
+const stateConfig: Record<ProtectionLevel, BannerConfig> = {
+  protected: {
+    title: "وضعیت بازیابی پایدار است",
+    badge: "پایدار",
+    tone: "success",
+    description: (status) =>
+      status.bundle_count && status.bundle_count > 0
+        ? `${status.bundle_count} باندل بازیابی آماده است.`
+        : "همه تغییرات تحت پوشش هستند.",
+    actionLabel: "بررسی دوباره",
+    actionVariant: "transparent",
+  },
+  partially_protected: {
+    title: "محافظت نسبی",
+    badge: "نیاز به بررسی",
+    tone: "warning",
+    description: (status) =>
+      `${status.changed_files_count ?? 0} فایل تغییر کرده است. توصیه می‌شود اسنپ‌شات جدید ایجاد کنید.`,
+    actionLabel: "بررسی وضعیت",
+    actionVariant: "secondary",
+  },
+  unprotected: {
+    title: "سیستم در معرض خطر",
+    badge: "نیاز به توجه",
+    tone: "error",
+    description: (status) =>
+      `${status.changed_files_count ?? 0} فایل بدون اسنپ‌شات جدید شناسایی شده است.`,
+    actionLabel: "بررسی وضعیت",
+    actionVariant: "secondary",
+  },
+}
+
+const resolveProtectionLevel = (
+  value: string | null | undefined
+): ProtectionLevel => {
+  if (value === "protected") return "protected"
+  if (value === "partially_protected") return "partially_protected"
+  return "unprotected"
+}
+
+export const StatusBanner = ({
+  status,
+  loading = false,
+  onRefresh,
+}: StatusBannerProps) => {
+  if (loading || !status) {
+    return (
+      <PRBanner
+        title="در حال بررسی وضعیت"
+        description="وضعیت بازیابی سیستم در حال بارگذاری است."
+        badge="در حال بارگذاری"
+        tone="neutral"
+        icon={<ArrowPath className="text-ui-fg-subtle" />}
+        loading
+      />
+    )
+  }
+
+  const level = resolveProtectionLevel(status.protection_level)
+  const config = stateConfig[level]
+
+  return (
+    <PRBanner
+      title={config.title}
+      description={config.description(status)}
+      badge={config.badge}
+      tone={config.tone}
+      icon={
+        <ShieldCheck
+          className={
+            config.tone === "error"
+              ? "text-ui-fg-error"
+              : "text-ui-fg-subtle"
+          }
+        />
+      }
+      actionLabel={onRefresh ? config.actionLabel : undefined}
+      actionVariant={config.actionVariant}
+      onAction={onRefresh}
+    />
+  )
+}
+
+export default StatusBanner

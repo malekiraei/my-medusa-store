@@ -1,0 +1,24 @@
+
+> @dtc/backend@0.0.1 dev
+> medusa develop
+
+[32minfo[39m:    redisUrl not found. A fake redis instance will be used.
+[32minfo[39m:    Linting project...
+[32minfo[39m:    [Watcher] Using standard dev server (restart on file change)
+[32minfo[39m:    [Watcher] Watching filesystem to reload dev server on file change
+[32minfo[39m:    redisUrl not found. A fake redis instance will be used.
+[32minfo[39m:    redisUrl not found. A fake redis instance will be used.
+[32minfo[39m:    Skipping instrumentation registration. No register function found.
+[32minfo[39m:    redisUrl not found. A fake redis instance will be used.
+[32minfo[39m:    No link to load from C:\Users\H.M\my-medusa-store\node_modules\@medusajs\draft-order\.medusa\server\src\links. skipped.
+[32minfo[39m:    No link to load from C:\Users\H.M\my-medusa-store\apps\medusa-premium-recovery\.medusa\server\src\links. skipped.
+[33mwarn[39m:    Local Event Bus installed. This is not recommended for production.
+[32minfo[39m:    Locking module: Using "in-memory" as default.
+[32minfo[39m:    No workflow to load from C:\Users\H.M\my-medusa-store\node_modules\@medusajs\draft-order\.medusa\server\src\workflows. skipped.
+[32minfo[39m:    No workflow to load from C:\Users\H.M\my-medusa-store\apps\medusa-premium-recovery\.medusa\server\src\workflows. skipped.
+[32minfo[39m:    No subscriber to load from C:\Users\H.M\my-medusa-store\node_modules\@medusajs\draft-order\.medusa\server\src\subscribers. skipped.
+[32minfo[39m:    No subscriber to load from C:\Users\H.M\my-medusa-store\apps\medusa-premium-recovery\.medusa\server\src\subscribers. skipped.
+[32minfo[39m:    No job to load from C:\Users\H.M\my-medusa-store\node_modules\@medusajs\medusa\dist\jobs. skipped.
+[32minfo[39m:    No job to load from C:\Users\H.M\my-medusa-store\node_modules\@medusajs\draft-order\.medusa\server\src\jobs. skipped.
+[32minfo[39m:    No job to load from C:\Users\H.M\my-medusa-store\apps\medusa-premium-recovery\.medusa\server\src\jobs. skipped.
+[32minfo[39m:    Admin URL → http://localhost:9000/app

@@ -1,0 +1,206 @@
+// src/admin/routes/premium-recovery/domain/snapshot/snapshot.reducer.ts
+// ============================================================
+// Snapshot Reducer - PURE STATE MACHINE
+// ✅ فقط logic خالص - بدون JSX
+// ✅ NO auto-transition در FETCH_SUCCESS
+// ✅ کاربر با دکمه "ادامه" به مرحله بعد می‌رود
+// ============================================================
+
+import type { SnapshotState, SnapshotStep, SnapshotFile } from "./snapshot.state"
+import type { SnapshotAction } from "./snapshot.actions"
+
+// ============================================================
+// Navigation Helpers
+// ============================================================
+const nextStep = (step: SnapshotStep): SnapshotStep => {
+  switch (step) {
+    case "analyzing":
+      return "selecting"
+    case "selecting":
+      return "metadata"
+    case "metadata":
+      return "review"
+    default:
+      return step
+  }
+}
+
+const prevStep = (step: SnapshotStep): SnapshotStep => {
+  switch (step) {
+    case "review":
+      return "metadata"
+    case "metadata":
+      return "selecting"
+    case "selecting":
+      return "analyzing"
+    default:
+      return step
+  }
+}
+
+// ============================================================
+// Initial State
+// ============================================================
+export const initialSnapshotState: SnapshotState = {
+  step: "idle",
+  files: [],
+  selectedFiles: [],
+  error: null,
+  isLoading: false,
+  snapshotName: "",
+  snapshotDescription: "",
+  snapshotBusinessContext: "",
+  snapshotUseCase: "manual",
+  isCreating: false,
+}
+
+// ============================================================
+// ⭐ Reducer - Pure State Machine
+// ============================================================
+export const snapshotReducer = (
+  state: SnapshotState,
+  action: SnapshotAction
+): SnapshotState => {
+  switch (action.type) {
+    case "OPEN":
+      return {
+        ...state,
+        step: "analyzing",
+        isLoading: true,
+        error: null,
+      }
+
+    case "CLOSE":
+    case "RESET":
+      return initialSnapshotState
+
+    case "FETCH_SUCCESS": {
+      const files = action.files ?? []
+      return {
+        ...state,
+        files,
+        isLoading: false,
+        error: null,
+      }
+    }
+
+    case "FETCH_ERROR":
+      return {
+        ...state,
+        isLoading: false,
+        error: action.error,
+        step: "analyzing",
+      }
+
+    case "TOGGLE_FILE": {
+      const exists = state.selectedFiles.includes(action.path)
+      return {
+        ...state,
+        selectedFiles: exists
+          ? state.selectedFiles.filter((f) => f !== action.path)
+          : [...state.selectedFiles, action.path],
+      }
+    }
+
+    case "SELECT_ALL":
+      return {
+        ...state,
+        selectedFiles:
+          state.selectedFiles.length === state.files.length
+            ? []
+            : state.files.map((f) => f.path),
+      }
+
+    case "NEXT": {
+      if (state.step === "analyzing") {
+        return { ...state, step: "selecting" }
+      }
+      if (state.step === "selecting") {
+        return { ...state, step: "metadata" }
+      }
+      if (state.step === "metadata") {
+        if (!state.snapshotName.trim()) return state
+        return { ...state, step: "review" }
+      }
+      return state
+    }
+
+    case "BACK":
+      return {
+        ...state,
+        step: prevStep(state.step),
+      }
+
+    case "SET_NAME":
+      return { ...state, snapshotName: action.name }
+
+    case "SET_DESCRIPTION":
+      return { ...state, snapshotDescription: action.description }
+
+    case "SET_BUSINESS_CONTEXT":
+      return { ...state, snapshotBusinessContext: action.context }
+
+    case "SET_USE_CASE":
+      return { ...state, snapshotUseCase: action.useCase }
+
+    case "CREATE_START":
+      return { ...state, isCreating: true, error: null }
+
+    case "CREATE_SUCCESS":
+      return initialSnapshotState
+
+    case "CREATE_ERROR":
+      return { ...state, isCreating: false, error: action.error }
+
+    default:
+      return state
+  }
+}
+
+// ============================================================
+// Selectors - فقط functions خالص
+// ============================================================
+export const selectors = {
+  getStep: (state: SnapshotState): SnapshotStep => state.step,
+  getFiles: (state: SnapshotState): SnapshotFile[] => state.files,
+  getSelectedFiles: (state: SnapshotState): string[] => state.selectedFiles,
+  getFileCount: (state: SnapshotState): number => state.files.length,
+  getSelectedCount: (state: SnapshotState): number => state.selectedFiles.length,
+  hasFiles: (state: SnapshotState): boolean => state.files.length > 0,
+  isLoading: (state: SnapshotState): boolean => state.isLoading,
+  hasError: (state: SnapshotState): boolean => state.error !== null,
+  getError: (state: SnapshotState): string | null => state.error,
+  getSnapshotName: (state: SnapshotState): string => state.snapshotName,
+  isNameValid: (state: SnapshotState): boolean => state.snapshotName.trim().length > 0,
+  getUseCase: (state: SnapshotState): SnapshotState["snapshotUseCase"] => state.snapshotUseCase,
+  isCreating: (state: SnapshotState): boolean => state.isCreating,
+  canContinue: (state: SnapshotState): boolean => {
+    const step = state.step
+    if (step === "analyzing") return true
+    if (step === "selecting") return true
+    if (step === "metadata") return state.snapshotName.trim().length > 0
+    return false
+  },
+  getStepIndex: (state: SnapshotState): number => {
+    const steps: SnapshotStep[] = ["idle", "analyzing", "selecting", "metadata", "review"]
+    return steps.indexOf(state.step)
+  },
+  getProgress: (state: SnapshotState): number => {
+    const activeSteps = ["analyzing", "selecting", "metadata", "review"]
+    const index = activeSteps.indexOf(state.step as any)
+    if (index === -1) return 0
+    return ((index + 1) / 4) * 100
+  },
+  getStepLabel: (state: SnapshotState): string => {
+    const labels: Record<SnapshotStep, string> = {
+      idle: "آماده",
+      analyzing: "تحلیل تغییرات",
+      selecting: "انتخاب فایل‌ها",
+      metadata: "اطلاعات اسنپ‌شات",
+      review: "بررسی و ایجاد",
+      done: "تکمیل شد",
+      error: "خطا",
+    }
+    return labels[state.step] || state.step
+  },
+}
