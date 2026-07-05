@@ -100,8 +100,7 @@ export const BundleList = ({
                 <Button
                   size="small"
                   variant="transparent"
-                  onClick={() => onDele
-                    te(bundle)}
+                  onClick={() => onDelete(bundle)}
                 >
                   حذف
                 </Button>
