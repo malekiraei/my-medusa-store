@@ -89,6 +89,14 @@ Example:
 
 Vendor must only re-export real installed symbols.
 
+## Architecture Improvement Rule
+
+Existing architecture is the starting point.
+
+Codex may improve local architecture when the change is directly related to the task, such as splitting an oversized route component, extracting a reusable card/table/modal, or moving repeated presentation mapping into an adapter.
+
+Do not change public package/plugin entry points or cross-app architecture without explicit instruction.
+
 ## Known Risk Area
 
 Duplicate files such as:
@@ -99,3 +107,5 @@ src/ui/components/metric/PRMetricCard.tsx
 ```
 
 must be audited before deletion. Do not remove while build is broken unless that file is the direct source of the error and the import graph is known.
+
+After build is green, Codex may consolidate duplicates when all imports are mapped and compatibility is preserved.

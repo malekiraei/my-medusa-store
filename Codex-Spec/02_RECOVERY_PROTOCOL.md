@@ -1,13 +1,18 @@
-# 02_RECOVERY_PROTOCOL.md — Broken Build Recovery
+# 02_RECOVERY_PROTOCOL.md — Kernel-Compatible Recovery Protocol
 
-## Step 1 — Run Plugin Build
+## Operating Principle
 
-```bash
-cd C:\Users\H.M\my-medusa-store\apps\medusa-premium-recovery
-npm run build
-```
+The automatic development Kernel owns build, backend startup, smart rebuild, backend restart, snapshot, Git backup, Continue Index, Code Map, and health/event logging.
 
-## Step 2 — Classify the First Error
+Codex recovers and improves code by reading Kernel output or user-provided logs, then making targeted complete edits. Codex must not run runtime-management commands unless explicitly requested.
+
+## Step 1 — Read the Current Error Source
+
+Use the latest Kernel log, terminal output, browser error, or user-provided error text.
+
+Do not start by running `npm run build` or `medusa develop`.
+
+## Step 2 — Classify the First Relevant Error
 
 ### Missing dependency
 
@@ -18,9 +23,10 @@ Cannot find module 'clsx'
 ```
 
 Action:
-- verify `package.json`
-- install only if user approves
-- export through vendor only after installed
+- inspect `package.json` and `package-lock.json`
+- do not install packages unless the user explicitly approves
+- use an existing installed alternative if suitable
+- export through vendor only after the dependency is confirmed installed
 
 ### Missing vendor export
 
@@ -32,8 +38,9 @@ Module "../vendor" has no exported member "MantineBadge"
 
 Action:
 - inspect `src/ui/vendor/index.ts`
-- inspect relevant vendor submodule
-- add only real export or change consumer to existing export
+- inspect the relevant vendor submodule
+- add only a real export, or change the consumer to an existing export
+- if multiple consumers repeat the same workaround, create a small vendor/helper abstraction
 
 ### Wrong icon props
 
@@ -47,6 +54,7 @@ Action:
 - identify wrong component resolution
 - do not pass UI props to SVG icon
 - use correct UI component or existing status wrapper
+- centralize icon/status mapping when it reduces repeated mistakes
 
 ### Admin entry resolution failure
 
@@ -57,49 +65,49 @@ Failed to resolve import "medusa-premium-recovery/admin"
 ```
 
 Action:
-- confirm plugin build output
-- confirm package name
-- clean backend `.medusa`
-- rebuild plugin
-- restart backend
-- do not create new files unless original admin entry is missing and user approves
+- confirm plugin admin entry files exist
+- confirm package name and exports
+- fix source/package configuration only
+- do not clean backend `.medusa`, rebuild plugin, or restart backend unless the user explicitly requests it
 
-## Step 3 — Clean Cache if Needed
+## Step 3 — Make a Complete Targeted Fix
 
-Backend:
+Prefer a clean local fix over a fragile patch.
 
-```bash
-cd C:\Users\H.M\my-medusa-store\apps\backend
-rmdir /s /q .medusa
-```
+Allowed when directly related:
 
-Plugin:
+- add a missing type/helper/component file,
+- consolidate duplicate logic used by the affected feature,
+- improve adapter/vendor boundaries,
+- rename local symbols for clarity,
+- remove dead code that is proven unused by the affected import graph.
 
-```bash
-cd C:\Users\H.M\my-medusa-store\apps\medusa-premium-recovery
-rmdir /s /q .medusa
-```
+Avoid unrelated redesign or broad architecture changes.
 
-## Step 4 — Windows Lock Error
+## Step 4 — Cache/Lock Issues
 
-If:
+If the error appears to require `.medusa` cleanup, node process termination, or cache reset, do not execute it directly.
 
-```txt
-EPERM unlink esbuild.exe
-```
-
-Run:
-
-```bash
-taskkill /F /IM node.exe
-```
-
-Then retry after closing active dev servers.
+Report the exact suspected cache/lock issue and ask the user to allow a manual infrastructure action, unless the user has already explicitly requested such action.
 
 ## Step 5 — Recovery Exit Condition
 
-Recovery is complete only when:
+Recovery is complete when the Kernel reports or the user confirms:
 
-- plugin `npm run build` succeeds,
-- backend admin can resolve plugin admin extension,
-- no TypeScript errors remain.
+- plugin build succeeds
+- backend admin resolves plugin admin extension
+- no Vite import-analysis error remains
+- no TypeScript import/export error remains
+- no missing module error remains
+
+## Step 6 — After Edit Behavior
+
+After code edits, stop and let the Kernel handle rebuild/restart automatically.
+
+Report:
+
+- files changed
+- purpose of change
+- targeted refactor/design choice if any
+- expected Kernel action
+- next recommended action

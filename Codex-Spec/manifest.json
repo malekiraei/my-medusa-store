@@ -1,7 +1,7 @@
 {
   "name": "Codex Premium Dashboard Project Specification",
-  "version": "2.0",
-  "created_utc": "2026-06-29T09:20:50.549422+00:00",
+  "version": "2.2-kernel-compatible-performance-optimized",
+  "created_utc": "2026-07-06T12:15:07.208099+00:00",
   "workspace_to_open": "C:\\Users\\H.M\\my-medusa-store",
   "plugin_path": "apps\\medusa-premium-recovery",
   "backend_path": "apps\\backend",
@@ -10,5 +10,29 @@
   "included_assets": [
     "Codex_Premium_Dashboard_Project_Spec_v1.zip",
     "Premium-Dashboard-Rewrite-Docs(2).zip"
-  ]
+  ],
+  "kernel_compatible": true,
+  "updated_files": [
+    "00_HARD_RULES.md",
+    "01_ARCHITECTURE_MAP.md",
+    "02_RECOVERY_PROTOCOL.md",
+    "03_AUDIT_COMMANDS.md",
+    "04_DEPENDENCY_GRAPH.md",
+    "05_VENDOR_CONTRACT.md",
+    "06_DESIGN_TOKEN_SPEC.md",
+    "07_COMPONENT_TREE.md",
+    "08_FILE_OWNERSHIP_RULES.md",
+    "09_COMPONENT_STANDARDS.md",
+    "10_VISUAL_POLISH_PLAN.md",
+    "11_GIT_AND_ROLLBACK_WORKFLOW.md",
+    "12_CODEX_PROMPT_TEMPLATE.md",
+    "13_DEFINITION_OF_DONE.md",
+    "Codex_Project_Specification_v2.0.md",
+    "Codex_Project_Specification_v2.1_Kernel_Compatible.md",
+    "Codex_Project_Specification_v2.2_Performance_Optimized.md",
+    "PROJECT.md",
+    "README.md",
+    "manifest.json"
+  ],
+  "codex_authority_model": "targeted_refactor_and_new_files_allowed_when_directly_related; runtime_operations_kernel_owned"
 }

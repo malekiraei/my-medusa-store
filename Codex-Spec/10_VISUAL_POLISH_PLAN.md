@@ -1,6 +1,8 @@
 # 10_VISUAL_POLISH_PLAN.md
 
-Only start this after build is green.
+Start visual polish after recovery is stable or when the requested task is specifically a UI improvement.
+
+If the Kernel reports an active build/runtime error, fix the error first unless the UI change is the direct fix.
 
 ## Step 1 — Normalize Surfaces
 
@@ -24,6 +26,8 @@ Create consistent mapping for:
 - success
 - failed
 
+Prefer adapter-driven mapping instead of repeated inline conditionals.
+
 ## Step 3 — Improve Dashboard Density
 
 Dashboard should feel premium but not oversized.
@@ -46,3 +50,9 @@ Add subtle plugin-specific identity:
 - polished chart cards.
 
 Avoid loud gradients or decorative noise.
+
+## Step 6 — Maintainable UI Structure
+
+Codex may split large route files into focused local components when it improves readability and does not break the route entry point.
+
+Do not collapse reusable components back into route files just to reduce file count.

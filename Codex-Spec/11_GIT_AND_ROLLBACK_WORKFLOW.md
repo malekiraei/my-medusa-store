@@ -1,36 +1,53 @@
-# 11_GIT_AND_ROLLBACK_WORKFLOW.md
+# 11_GIT_AND_ROLLBACK_WORKFLOW.md — Kernel-Owned Backup Workflow
+
+## Kernel Ownership
+
+Snapshot creation, Git backup, and routine rollback checkpoints are handled automatically by the development Kernel.
+
+Codex must not run:
+
+```bash
+git add
+git commit
+git reset
+git checkout
+```
+
+unless the user explicitly requests that exact Git action.
 
 ## Before Codex Edits
 
-Recommended:
+Codex should inspect the target files and make a complete targeted edit.
 
-```bash
-git status
-git add .
-git commit -m "checkpoint before codex recovery"
-```
-
-If git is not available, create a ZIP backup.
+Do not create manual ZIP backups or commits.
 
 ## During Recovery
 
-After each successful build:
+If a change creates more errors than it fixes, Codex should revert only its own last code change when possible, or clearly report the exact file and lines that should be reverted.
 
-```bash
-git add .
-git commit -m "recover build step"
-```
+Targeted refactoring is acceptable when it lowers rollback risk by simplifying the affected code.
 
-## Rollback Rule
+## Never Mix Without Reason
 
-If a change creates more errors than it fixes, revert that change immediately.
-
-## Never Mix
-
-Do not mix these in one commit:
+Avoid mixing these in one coding step unless they are directly connected to the same requested task:
 
 - recovery
 - dependency installation
 - UI redesign
 - refactor
 - visual polish
+- Git/backup operations
+
+Git/backup operations remain Kernel-owned unless explicitly requested.
+
+## Report Format
+
+After editing, report:
+
+```txt
+Files changed:
+Purpose:
+Design/refactor choice:
+Rollback risk:
+Kernel backup/snapshot: handled automatically
+```

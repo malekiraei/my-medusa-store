@@ -8,27 +8,59 @@ You are working in VS Code on:
 
 `C:\Users\H.M\my-medusa-store`
 
-Before editing, read the files in `Codex-Spec-v2`:
+Important:
+
+The project uses an automatic development Kernel.
+
+The Kernel automatically performs:
+- Plugin build
+- Backend startup (`medusa develop`)
+- Smart rebuilds
+- Backend restart when required
+- Snapshot and Git backup
+- Continue Index and Code Map updates
+- Health and event logging
+
+Do not duplicate Kernel-owned operations.
+
+Before editing, read:
 
 1. `PROJECT.md`
 2. `00_HARD_RULES.md`
 3. `01_ARCHITECTURE_MAP.md`
 4. `02_RECOVERY_PROTOCOL.md`
 5. `03_AUDIT_COMMANDS.md`
+6. `05_VENDOR_CONTRACT.md`
+7. `13_DEFINITION_OF_DONE.md`
 
 Current goal:
 
-Recover the Medusa Premium Recovery plugin build first.
+Focus on coding, recovery, feature implementation, and premium plugin improvement.
 
-Rules:
+Runtime rules:
 
-- Do not create new files while build is broken.
-- Do not redesign UI while build is broken.
-- Do not add fake exports.
-- Do not assume installed packages.
-- Inspect package.json and vendor files first.
-- Fix only the current build errors.
-- Run `npm run build` after edits.
-- Report changed files and build result.
+- Do NOT run `npm run build` unless explicitly requested.
+- Do NOT run `medusa develop` unless explicitly requested.
+- Do NOT restart the backend unless explicitly requested.
+- Do NOT create snapshots or Git backups.
+- Do NOT update Continue Index or Code Map.
+- Do NOT clean `.medusa` unless explicitly requested.
 
-After build is green, stop and ask before visual polish.
+Coding rules:
+
+- Do not add fake imports or exports.
+- Do not assume packages are installed.
+- Inspect package.json and vendor files before using dependencies.
+- Prefer the smallest complete solution, not the smallest patch.
+- Targeted refactoring is allowed when it directly supports the task, reduces complexity, removes duplication, or improves maintainability.
+- New files are allowed when directly justified by the task and aligned with existing architecture.
+- Avoid broad unrelated rewrites or changing architecture outside the affected feature.
+- If Kernel reports build errors, fix the first relevant error before expanding scope.
+- Preserve premium UI quality; do not replace real UI with placeholders unless emergency safe mode is requested.
+
+After editing report only:
+- Files changed
+- Purpose of change
+- Design/refactor choice, if any
+- Expected Kernel action
+- Next recommended action
