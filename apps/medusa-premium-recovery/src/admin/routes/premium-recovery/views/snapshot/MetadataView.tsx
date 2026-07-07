@@ -41,7 +41,7 @@ export const MetadataView = ({
   onSetUseCase,
 }: MetadataViewProps) => {
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex flex-col">
       <ViewHeader
         icon={<FileClock className="size-4" />}
         title="Describe this record"
@@ -49,7 +49,7 @@ export const MetadataView = ({
         tone="green"
       />
 
-      <div className="flex-1 overflow-y-auto py-4">
+      <div className="py-4">
         <Container className="p-0">
           <div className="grid gap-4 px-4 py-4 md:grid-cols-2">
             <div className="flex flex-col gap-y-2 md:col-span-2">

@@ -134,7 +134,7 @@ export default function SelectingView({
   const selectedCount = safeSelected.length
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex flex-col">
       <ViewHeader
         icon={<FileClock className="size-4" />}
         title="Choose files to capture"
@@ -142,7 +142,7 @@ export default function SelectingView({
         tone="blue"
       />
 
-      <div className="flex-1 overflow-y-auto py-4">
+      <div className="py-4">
         <Container className="overflow-hidden p-0">
           <div className="flex items-center justify-between gap-x-3 border-b border-ui-border-base px-4 py-3">
             <div className="flex min-w-0 flex-col gap-y-1">
@@ -169,7 +169,7 @@ export default function SelectingView({
               </Text>
             </div>
           ) : (
-            <div className="max-h-[430px] divide-y divide-ui-border-base overflow-y-auto">
+            <div className="divide-y divide-ui-border-base">
               {safeFiles.map((file) => {
                 const isSelected = safeSelected.includes(file.path)
                 const FileIcon = getFileIcon(file.path)

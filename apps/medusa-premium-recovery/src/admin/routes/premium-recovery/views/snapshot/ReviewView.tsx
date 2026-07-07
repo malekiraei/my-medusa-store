@@ -47,7 +47,7 @@ export const ReviewView = ({
   selectedCount,
 }: ReviewViewProps) => {
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex flex-col">
       <ViewHeader
         icon={<CheckCircle2 className="size-4" />}
         title="Confirm capture"
@@ -55,7 +55,7 @@ export const ReviewView = ({
         tone="green"
       />
 
-      <div className="flex-1 overflow-y-auto py-4">
+      <div className="py-4">
         <Container className="overflow-hidden p-0">
           <SummaryRow label="Name" value={snapshotName || "Untitled snapshot record"} />
           <SummaryRow

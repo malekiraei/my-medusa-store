@@ -11,7 +11,6 @@ import {
 import {
   CheckCircle2,
   FileClock,
-  LoaderCircle,
   TriangleAlert,
 } from "../../../../ui/vendor/lucide"
 import { getExperienceView } from "../../../../ui/adapters/experience"
@@ -135,7 +134,7 @@ const StatusView = ({
   onPrimary: () => void
   error?: string | null
 }) => {
-  const Icon = tone === "green" ? CheckCircle2 : tone === "red" ? TriangleAlert : LoaderCircle
+  const Icon = tone === "green" ? CheckCircle2 : tone === "red" ? TriangleAlert : FileClock
 
   return (
     <Container className="p-0">
@@ -448,8 +447,8 @@ export default function SnapshotWizard({
 
   return (
     <FocusModal open={isOpen} onOpenChange={handleOpenChange}>
-      <FocusModal.Content className="z-[1000]">
-        <div className="flex h-full flex-col overflow-hidden bg-ui-bg-base">
+      <FocusModal.Content className="!fixed !left-1/2 !top-1/2 z-[1000] !h-[86vh] !max-h-[86vh] !w-[calc(100vw-2rem)] !max-w-[980px] !-translate-x-1/2 !-translate-y-1/2 overflow-hidden rounded-xl border border-ui-border-base bg-ui-bg-base p-0 shadow-elevation-card-hover">
+        <div className="flex h-full min-h-0 flex-col overflow-hidden bg-ui-bg-base">
           <FocusModal.Header>
             <div className="flex w-full items-center justify-between gap-x-4">
               <div className="flex min-w-0 items-center gap-x-3">
@@ -494,7 +493,7 @@ export default function SnapshotWizard({
           ) : null}
 
           <FocusModal.Body className="flex min-h-0 flex-1 flex-col overflow-hidden">
-            <div className="flex-1 overflow-y-auto px-6 py-6">
+            <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
               {renderView()}
             </div>
           </FocusModal.Body>
