@@ -1,20 +1,26 @@
-// ============================================================
-// SnapshotWizard - Medusa UI implementation
-// Uses official Medusa UI primitives and semantic UI tokens.
-// No inline styles, no custom SVG, no keyframes, no hardcoded colors,
-// no arbitrary/dynamic Tailwind classes.
-// ============================================================
-
 import { useCallback, useEffect } from "react"
-import { Badge, Button, Container, FocusModal, Heading, Text } from "../../../../ui/vendor"
 
+import {
+  Badge,
+  Button,
+  Container,
+  FocusModal,
+  Heading,
+  Text,
+} from "../../../../ui/vendor"
+import {
+  CheckCircle2,
+  FileClock,
+  LoaderCircle,
+  TriangleAlert,
+} from "../../../../ui/vendor/lucide"
+import { getExperienceView } from "../../../../ui/adapters/experience"
 import { useSnapshotMachine } from "../hooks/useSnapshotMachine"
+import { snapshotService } from "../services/snapshot.service"
 import AnalyzingView from "../views/snapshot/AnalyzingView"
-import SelectingView from "../views/snapshot/SelectingView"
 import MetadataView from "../views/snapshot/MetadataView"
 import ReviewView from "../views/snapshot/ReviewView"
-import { getExperienceView } from "../../../../ui/adapters/experience"
-import { snapshotService } from "../services/snapshot.service"
+import SelectingView from "../views/snapshot/SelectingView"
 import type {
   SnapshotCreatePayload,
   SnapshotUseCase,
@@ -27,50 +33,87 @@ type Props = {
   fetchGitFiles: () => Promise<any[]>
 }
 
-const normalizeProgressValue = (progress: string | number | undefined) => {
-  if (typeof progress === "number") {
-    return `${Math.max(0, Math.min(100, progress))}%`
-  }
+const progressWidthClass = (progress: number) => {
+  if (progress >= 100) return "w-full"
+  if (progress >= 90) return "w-[90%]"
+  if (progress >= 75) return "w-3/4"
+  if (progress >= 66) return "w-2/3"
+  if (progress >= 50) return "w-1/2"
+  if (progress >= 33) return "w-1/3"
+  if (progress >= 25) return "w-1/4"
+  if (progress > 0) return "w-1/6"
+  return "w-0"
+}
 
-  if (!progress) {
-    return "0%"
-  }
+const stepItems = [
+  { id: "selecting", label: "Files" },
+  { id: "metadata", label: "Details" },
+  { id: "review", label: "Review" },
+]
 
-  return progress
+const getStepIndex = (step: string) => {
+  if (step === "metadata") return 1
+  if (step === "review" || step === "creating" || step === "done") return 2
+  return 0
 }
 
 const ProgressBlock = ({
   progress,
   label,
+  step,
 }: {
-  progress: string | number | undefined
+  progress: number
   label: string
+  step: string
 }) => {
-  const safeProgress = normalizeProgressValue(progress)
+  const currentStepIndex = getStepIndex(step)
 
   return (
-    <div className="flex flex-col gap-y-2">
-      <div className="h-2 overflow-hidden rounded-full bg-ui-bg-subtle">
+    <div className="flex flex-col gap-y-3">
+      <div className="flex items-center justify-between gap-x-3">
+        {stepItems.map((item, index) => {
+          const isActive = index === currentStepIndex
+          const isComplete = index < currentStepIndex
+
+          return (
+            <div key={item.id} className="flex min-w-0 items-center gap-x-2">
+              <span
+                className={[
+                  "flex size-5 items-center justify-center rounded-full border text-[10px] font-medium",
+                  isActive || isComplete
+                    ? "border-ui-border-interactive bg-ui-bg-interactive text-ui-fg-on-color"
+                    : "border-ui-border-base bg-ui-bg-base text-ui-fg-muted",
+                ].join(" ")}
+              >
+                {index + 1}
+              </span>
+              <Text
+                size="small"
+                leading="compact"
+                className={isActive ? "text-ui-fg-base" : "text-ui-fg-muted"}
+              >
+                {item.label}
+              </Text>
+            </div>
+          )
+        })}
+      </div>
+
+      <div className="h-1.5 overflow-hidden rounded-full bg-ui-bg-subtle">
         <div
           className={[
-            "h-full rounded-full bg-ui-fg-base transition-all",
-            safeProgress === "0%" ? "w-0" : "",
-            safeProgress === "25%" ? "w-1/4" : "",
-            safeProgress === "50%" ? "w-1/2" : "",
-            safeProgress === "75%" ? "w-3/4" : "",
-            safeProgress === "100%" ? "w-full" : "",
-          ]
-            .filter(Boolean)
-            .join(" ")}
+            "h-full rounded-full bg-ui-bg-interactive transition-all duration-300",
+            progressWidthClass(progress),
+          ].join(" ")}
         />
       </div>
 
-      <div className="flex items-center justify-between">
-        <Text size="small" className="text-ui-fg-muted">
-          {safeProgress}
-        </Text>
-        <Text size="small" className="text-ui-fg-muted">
+      <div className="flex items-center justify-between gap-x-3">
+        <Text size="small" leading="compact" className="text-ui-fg-muted">
           {label}
+        </Text>
+        <Text size="small" leading="compact" className="text-ui-fg-muted">
+          {Math.max(0, Math.min(100, progress))}%
         </Text>
       </div>
     </div>
@@ -83,26 +126,44 @@ const StatusView = ({
   tone,
   primaryLabel,
   onPrimary,
+  error,
 }: {
   title: string
   description: string
   tone: "green" | "red" | "blue"
   primaryLabel: string
   onPrimary: () => void
+  error?: string | null
 }) => {
+  const Icon = tone === "green" ? CheckCircle2 : tone === "red" ? TriangleAlert : LoaderCircle
+
   return (
     <Container className="p-0">
-      <div className="flex flex-col items-center gap-y-4 px-6 py-8 text-center">
-        <Badge color={tone}>{title}</Badge>
-
-        <div className="flex flex-col gap-y-1">
-          <Heading level="h2">{title}</Heading>
-          <Text size="small" className="text-ui-fg-muted">
-            {description}
-          </Text>
+      <div className="flex min-h-[360px] flex-col items-center justify-center gap-y-5 px-6 py-10 text-center">
+        <div className="flex size-14 items-center justify-center rounded-xl border border-ui-border-base bg-ui-bg-subtle shadow-elevation-card-rest">
+          <Icon
+            className={[
+              "size-6",
+              tone === "green" ? "text-ui-fg-success" : "",
+              tone === "red" ? "text-ui-fg-error" : "",
+              tone === "blue" ? "animate-spin text-ui-fg-subtle" : "",
+            ].join(" ")}
+          />
         </div>
 
-        <Button variant="primary" onClick={onPrimary}>
+        <div className="flex max-w-md flex-col gap-y-2">
+          <Heading level="h2">{title}</Heading>
+          <Text size="small" leading="compact" className="text-ui-fg-subtle">
+            {description}
+          </Text>
+          {error ? (
+            <Text size="small" leading="compact" className="text-ui-fg-error">
+              {error}
+            </Text>
+          ) : null}
+        </div>
+
+        <Button variant="primary" onClick={onPrimary} disabled={tone === "blue"}>
           {primaryLabel}
         </Button>
       </div>
@@ -202,12 +263,12 @@ export default function SnapshotWizard({
   }, [step, safeSelected.length, name, send])
 
   const handleBack = useCallback(() => {
-    if (step === "selecting") {
+    if (step === "selecting" || isCreating) {
       return
     }
 
     send({ type: "BACK" })
-  }, [step, send])
+  }, [step, isCreating, send])
 
   const handleRetry = useCallback(() => {
     send({ type: "RETRY" })
@@ -247,7 +308,7 @@ export default function SnapshotWizard({
 
   const handleSetUseCase = useCallback(
     (snapshotUseCase: string) => {
-      send({ type: "SET_USE_CASE", useCase: snapshotUseCase })
+      send({ type: "SET_USE_CASE", useCase: snapshotUseCase as SnapshotUseCase })
     },
     [send]
   )
@@ -258,7 +319,7 @@ export default function SnapshotWizard({
         return
       }
 
-      if (event.key === "Escape" && !isAnalyzing && !isCreating && !isDone) {
+      if (event.key === "Escape" && canClose && !isDone) {
         event.preventDefault()
         handleClose()
         return
@@ -280,8 +341,7 @@ export default function SnapshotWizard({
     return () => window.removeEventListener("keydown", handler)
   }, [
     isOpen,
-    isAnalyzing,
-    isCreating,
+    canClose,
     isDone,
     ui.showBack,
     ui.nextDisabled,
@@ -347,7 +407,7 @@ export default function SnapshotWizard({
             title={ui.title}
             description={ui.description}
             tone="blue"
-            primaryLabel="در حال ایجاد..."
+            primaryLabel="Creating..."
             onPrimary={() => undefined}
           />
         )
@@ -358,7 +418,7 @@ export default function SnapshotWizard({
             title={ui.title}
             description={ui.description}
             tone="green"
-            primaryLabel="بستن"
+            primaryLabel="Close"
             onPrimary={handleClose}
           />
         )
@@ -371,6 +431,7 @@ export default function SnapshotWizard({
             tone="red"
             primaryLabel={ui.nextLabel}
             onPrimary={handleRetry}
+            error={error}
           />
         )
 
@@ -381,81 +442,101 @@ export default function SnapshotWizard({
 
   return (
     <FocusModal open={isOpen} onOpenChange={handleOpenChange}>
-      <FocusModal.Content>
-        <FocusModal.Header>
-          <div className="flex w-full items-center justify-between gap-x-4">
-            <div className="flex flex-col gap-y-1">
-              <div className="flex items-center gap-x-2">
-                <Heading level="h2" id="wizard-title">
-                  {ui.title}
-                </Heading>
-                {isCreating && <Badge color="blue">در حال پردازش</Badge>}
-                {isDone && <Badge color="green">کامل شد</Badge>}
-                {isError && <Badge color="red">خطا</Badge>}
+      <FocusModal.Content className="z-[1000]">
+        <div className="flex h-full flex-col overflow-hidden bg-ui-bg-base">
+          <FocusModal.Header>
+            <div className="flex w-full items-center justify-between gap-x-4">
+              <div className="flex min-w-0 items-center gap-x-3">
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-ui-border-base bg-ui-bg-subtle shadow-elevation-card-rest">
+                  <FileClock className="size-5 text-ui-fg-subtle" />
+                </div>
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Heading level="h2" id="wizard-title">
+                      {ui.title}
+                    </Heading>
+                    {isCreating ? <Badge color="blue">Processing</Badge> : null}
+                    {isDone ? <Badge color="green">Created</Badge> : null}
+                    {isError ? <Badge color="red">Error</Badge> : null}
+                  </div>
+
+                  <Text size="small" leading="compact" className="mt-1 text-ui-fg-muted">
+                    {ui.description}
+                  </Text>
+                </div>
               </div>
 
-              <Text size="small" className="text-ui-fg-muted">
-                {ui.description}
-              </Text>
+              <Button
+                variant="secondary"
+                size="small"
+                onClick={handleClose}
+                disabled={!canClose}
+              >
+                Close
+              </Button>
             </div>
+          </FocusModal.Header>
 
-            <Button
-              variant="secondary"
-              size="small"
-              onClick={handleClose}
-              disabled={!canClose}
-            >
-              بستن
-            </Button>
-          </div>
-        </FocusModal.Header>
-
-        <FocusModal.Body className="flex flex-1 flex-col overflow-hidden">
-          {ui.showProgress && !isError && !isDone && (
-            <div className="border-b border-ui-border-base px-6 py-4">
+          {ui.showProgress && !isError && !isDone ? (
+            <div className="border-b border-ui-border-base bg-ui-bg-subtle/40 px-6 py-4">
               <ProgressBlock
                 progress={ui.progress}
                 label={snapshotService.getStepLabel(experienceState)}
+                step={step}
               />
             </div>
-          )}
+          ) : null}
 
-          <div className="flex-1 overflow-y-auto">
-            <div className="px-6 py-6">{renderView()}</div>
-          </div>
-        </FocusModal.Body>
+          <FocusModal.Body className="flex min-h-0 flex-1 flex-col overflow-hidden">
+            <div className="flex-1 overflow-y-auto px-6 py-6">
+              {renderView()}
+            </div>
+          </FocusModal.Body>
 
-        {ui.showProgress && !isError && !isDone && (
           <FocusModal.Footer>
             <div className="flex w-full items-center justify-between gap-x-3">
-              <div>
-                <Text size="small" className="text-ui-fg-muted">
-                  {safeSelected.length} فایل انتخاب شده
-                </Text>
-              </div>
+              <Text size="small" leading="compact" className="text-ui-fg-muted">
+                {safeSelected.length} selected
+              </Text>
 
               <div className="flex items-center gap-x-2">
-                {ui.showBack && (
+                {ui.showBack ? (
                   <Button
+                    size="small"
                     variant="secondary"
                     onClick={handleBack}
                     disabled={isCreating}
                   >
                     {ui.backLabel}
                   </Button>
-                )}
+                ) : null}
 
-                <Button
-                  variant="primary"
-                  onClick={handleNext}
-                  disabled={ui.nextDisabled || isCreating}
-                >
-                  {ui.nextLabel}
-                </Button>
+                {isError ? (
+                  <Button size="small" variant="secondary" onClick={handleRetry}>
+                    {ui.nextLabel}
+                  </Button>
+                ) : null}
+
+                {!isDone && !isError ? (
+                  <Button
+                    size="small"
+                    variant="primary"
+                    onClick={handleNext}
+                    disabled={ui.nextDisabled || isCreating || isAnalyzing}
+                  >
+                    {ui.nextLabel}
+                  </Button>
+                ) : null}
+
+                {isDone ? (
+                  <Button size="small" variant="primary" onClick={handleClose}>
+                    Close
+                  </Button>
+                ) : null}
               </div>
             </div>
           </FocusModal.Footer>
-        )}
+        </div>
       </FocusModal.Content>
     </FocusModal>
   )

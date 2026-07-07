@@ -21,9 +21,9 @@ export type PRExperienceView = {
 
 const experienceMap: Record<PRExperienceState, PRExperienceView> = {
   idle: {
-    title: "آماده",
+    title: "Ready",
     description: "",
-    nextLabel: "شروع",
+    nextLabel: "Start",
     backLabel: "",
     nextDisabled: true,
     showProgress: false,
@@ -31,9 +31,9 @@ const experienceMap: Record<PRExperienceState, PRExperienceView> = {
     progress: 0,
   },
   analyzing: {
-    title: "بررسی تغییرات",
-    description: "در حال بررسی مخزن...",
-    nextLabel: "در حال بررسی...",
+    title: "Review workspace changes",
+    description: "Checking the current Git changes.",
+    nextLabel: "Checking...",
     backLabel: "",
     nextDisabled: true,
     showProgress: true,
@@ -41,9 +41,9 @@ const experienceMap: Record<PRExperienceState, PRExperienceView> = {
     progress: 25,
   },
   selecting: {
-    title: "انتخاب فایل‌ها",
-    description: "فایل‌های تغییر یافته را انتخاب کنید",
-    nextLabel: "ادامه",
+    title: "Select files",
+    description: "Choose which changed files should be captured.",
+    nextLabel: "Continue",
     backLabel: "",
     nextDisabled: false,
     showProgress: true,
@@ -51,29 +51,29 @@ const experienceMap: Record<PRExperienceState, PRExperienceView> = {
     progress: 33,
   },
   metadata: {
-    title: "اطلاعات اسنپ‌شات",
-    description: "نام و توضیحات اسنپ‌شات را وارد کنید",
-    nextLabel: "ادامه",
-    backLabel: "بازگشت",
+    title: "Add record details",
+    description: "Name this file-backed snapshot record.",
+    nextLabel: "Continue",
+    backLabel: "Back",
     nextDisabled: false,
     showProgress: true,
     showBack: true,
     progress: 66,
   },
   review: {
-    title: "بازبینی",
-    description: "اطلاعات را بررسی و تأیید کنید",
-    nextLabel: "ایجاد اسنپ‌شات",
-    backLabel: "بازگشت",
+    title: "Review capture",
+    description: "Confirm the selected files before creating the record.",
+    nextLabel: "Create Snapshot",
+    backLabel: "Back",
     nextDisabled: false,
     showProgress: true,
     showBack: true,
     progress: 90,
   },
   creating: {
-    title: "در حال ایجاد...",
-    description: "لطفا چند لحظه صبر کنید",
-    nextLabel: "در حال ایجاد...",
+    title: "Creating snapshot",
+    description: "Capturing selected workspace files.",
+    nextLabel: "Creating...",
     backLabel: "",
     nextDisabled: true,
     showProgress: false,
@@ -81,9 +81,9 @@ const experienceMap: Record<PRExperienceState, PRExperienceView> = {
     progress: 95,
   },
   done: {
-    title: "ایجاد شد",
-    description: "اسنپ‌شات با موفقیت ایجاد شد",
-    nextLabel: "بستن",
+    title: "Snapshot created",
+    description: "The file-backed record was created successfully.",
+    nextLabel: "Close",
     backLabel: "",
     nextDisabled: false,
     showProgress: false,
@@ -91,9 +91,9 @@ const experienceMap: Record<PRExperienceState, PRExperienceView> = {
     progress: 100,
   },
   error: {
-    title: "خطا",
-    description: "خطا در ایجاد اسنپ‌شات",
-    nextLabel: "تلاش مجدد",
+    title: "Snapshot could not be created",
+    description: "Review the error and try again.",
+    nextLabel: "Try again",
     backLabel: "",
     nextDisabled: false,
     showProgress: false,
@@ -102,8 +102,21 @@ const experienceMap: Record<PRExperienceState, PRExperienceView> = {
   },
 }
 
-export function getExperienceView(
-  state: PRExperienceState
-): PRExperienceView {
+export function getExperienceView(state: PRExperienceState): PRExperienceView {
   return experienceMap[state] ?? experienceMap.idle
+}
+
+export function getExperienceStepLabel(state: PRExperienceState): string {
+  const labels: Record<PRExperienceState, string> = {
+    idle: "Ready",
+    analyzing: "Checking files",
+    selecting: "Select files",
+    metadata: "Record details",
+    review: "Review",
+    creating: "Creating",
+    done: "Created",
+    error: "Error",
+  }
+
+  return labels[state] ?? state
 }

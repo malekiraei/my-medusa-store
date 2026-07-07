@@ -1,8 +1,7 @@
-// ============================================================
-// Snapshot Service - STATE NORMALIZATION
-// ============================================================
-
-import type { PRExperienceState as ExperienceState } from "../../../../ui/adapters/experience"
+import {
+  getExperienceStepLabel,
+  type PRExperienceState as ExperienceState,
+} from "../../../../ui/adapters/experience"
 import type {
   SnapshotCreatePayload,
   SnapshotUseCase,
@@ -28,23 +27,23 @@ export type NormalizedSnapshotPayload = SnapshotCreatePayload
 
 export const snapshotService = {
   extractState(machineState: any): WizardState {
-    const status = machineState?.status || 'idle'
+    const status = machineState?.status || "idle"
     const files = machineState?.files || []
     const selected = machineState?.selectedFiles || []
-    
-    const isAnalyzing = ['loading', 'empty', 'analyzing'].includes(status)
-    const isCreating = status === 'creating'
-    const isError = status === 'error'
-    const isDone = status === 'done'
-    
-    let experienceState: ExperienceState = 'idle'
-    if (isAnalyzing) experienceState = 'analyzing'
-    else if (status === 'selecting') experienceState = 'selecting'
-    else if (status === 'metadata') experienceState = 'metadata'
-    else if (status === 'review') experienceState = 'review'
-    else if (isCreating) experienceState = 'creating'
-    else if (isDone) experienceState = 'done'
-    else if (isError) experienceState = 'error'
+
+    const isAnalyzing = ["loading", "empty", "analyzing"].includes(status)
+    const isCreating = status === "creating"
+    const isError = status === "error"
+    const isDone = status === "done"
+
+    let experienceState: ExperienceState = "idle"
+    if (isAnalyzing) experienceState = "analyzing"
+    else if (status === "selecting") experienceState = "selecting"
+    else if (status === "metadata") experienceState = "metadata"
+    else if (status === "review") experienceState = "review"
+    else if (isCreating) experienceState = "creating"
+    else if (isDone) experienceState = "done"
+    else if (isError) experienceState = "error"
 
     return {
       experienceState,
@@ -52,10 +51,10 @@ export const snapshotService = {
       files,
       selected,
       error: machineState?.error || null,
-      name: machineState?.name || '',
-      description: machineState?.description || '',
-      context: machineState?.businessContext || '',
-      useCase: machineState?.useCase || 'manual',
+      name: machineState?.name || "",
+      description: machineState?.description || "",
+      context: machineState?.businessContext || "",
+      useCase: machineState?.useCase || "manual",
       isAnalyzing,
       isCreating,
       isError,
@@ -84,16 +83,6 @@ export const snapshotService = {
   },
 
   getStepLabel(experienceState: ExperienceState): string {
-    const labels: Record<ExperienceState, string> = {
-      idle: 'آماده',
-      analyzing: 'بررسی فایل‌ها',
-      selecting: 'انتخاب فایل‌ها',
-      metadata: 'اطلاعات اسنپ‌شات',
-      review: 'بازبینی',
-      creating: 'در حال ایجاد',
-      done: 'ایجاد شد',
-      error: 'خطا',
-    }
-    return labels[experienceState] || experienceState
-  }
+    return getExperienceStepLabel(experienceState)
+  },
 }
