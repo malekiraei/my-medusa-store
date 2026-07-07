@@ -1,6 +1,11 @@
-import React from "react"
-
-import { Container, Input, Text } from "../../../../../ui/vendor"
+import {
+  Container,
+  Input,
+  Label,
+  Select,
+  Text,
+  Textarea,
+} from "../../../../../ui/vendor"
 import { FileClock, Info } from "../../../../../ui/vendor/lucide"
 import type { SnapshotUseCase } from "../../types/snapshot-workflow"
 import { ViewHeader } from "./ViewHeader"
@@ -17,14 +22,14 @@ export type MetadataViewProps = {
   onSetUseCase: (useCase: SnapshotUseCase) => void
 }
 
-const useCaseOptions = [
-  { value: "manual", label: "دستی" },
-  { value: "before_update", label: "قبل از به‌روزرسانی محصول" },
-  { value: "before_theme_change", label: "قبل از تغییر قالب" },
-  { value: "before_plugin_install", label: "قبل از نصب افزونه" },
+const useCaseOptions: Array<{ value: SnapshotUseCase; label: string }> = [
+  { value: "manual", label: "Manual capture" },
+  { value: "before_update", label: "Before product update" },
+  { value: "before_theme_change", label: "Before theme change" },
+  { value: "before_plugin_install", label: "Before plugin install" },
 ]
 
-export const MetadataView: React.FC<MetadataViewProps> = ({
+export const MetadataView = ({
   snapshotName,
   snapshotDescription,
   snapshotBusinessContext,
@@ -34,86 +39,86 @@ export const MetadataView: React.FC<MetadataViewProps> = ({
   onSetDescription,
   onSetBusinessContext,
   onSetUseCase,
-}) => {
+}: MetadataViewProps) => {
   return (
     <div className="flex h-full flex-col">
       <ViewHeader
         icon={<FileClock className="size-4" />}
-        title="اطلاعات اسنپ‌شات"
-        subtitle={`${selectedCount} فایل انتخاب شده`}
+        title="Describe this record"
+        subtitle={`${selectedCount} selected files will be captured`}
         tone="green"
       />
 
       <div className="flex-1 overflow-y-auto py-4">
         <Container className="p-0">
-          <div className="flex flex-col gap-y-4 px-4 py-4">
-            <div className="flex flex-col gap-y-2">
-              <Text size="small" leading="compact" weight="plus">
-                نام *
-              </Text>
+          <div className="grid gap-4 px-4 py-4 md:grid-cols-2">
+            <div className="flex flex-col gap-y-2 md:col-span-2">
+              <Label className="txt-compact-small-plus">
+                Name
+              </Label>
               <Input
                 type="text"
-                placeholder="مثلا: قبل از به‌روزرسانی"
+                placeholder="Before product update"
                 value={snapshotName}
                 onChange={(event) => onSetName(event.target.value)}
                 autoFocus
               />
-              {!snapshotName.trim() && (
+              {!snapshotName.trim() ? (
                 <Text size="small" leading="compact" className="text-ui-fg-error">
-                  وارد کردن نام الزامی است
+                  A name is required before the record can be created.
                 </Text>
-              )}
+              ) : null}
             </div>
 
-            <div className="flex flex-col gap-y-2">
-              <Text size="small" leading="compact" weight="plus">
-                زمینه کاری
-              </Text>
-              <select
+            <div className="flex flex-col gap-y-2 md:col-span-2">
+              <Label className="txt-compact-small-plus">
+                Use case
+              </Label>
+              <Select
                 value={snapshotUseCase}
-                onChange={(event) =>
-                  onSetUseCase(event.target.value as SnapshotUseCase)
-                }
-                className="txt-compact-small h-8 w-full rounded-md border border-ui-border-base bg-ui-bg-field px-2 text-ui-fg-base outline-none transition-colors hover:bg-ui-bg-field-hover focus:shadow-borders-interactive-with-focus"
+                onValueChange={(value) => onSetUseCase(value as SnapshotUseCase)}
               >
-                {useCaseOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+                <Select.Trigger>
+                  <Select.Value placeholder="Select use case" />
+                </Select.Trigger>
+                <Select.Content>
+                  {useCaseOptions.map((option) => (
+                    <Select.Item key={option.value} value={option.value}>
+                      {option.label}
+                    </Select.Item>
+                  ))}
+                </Select.Content>
+              </Select>
             </div>
 
             <div className="flex flex-col gap-y-2">
-              <Text size="small" leading="compact" weight="plus">
-                زمینه کسب‌وکار
-              </Text>
-              <textarea
-                placeholder="مثلا: آماده‌سازی برای انتشار"
+              <Label className="txt-compact-small-plus">
+                Business context
+              </Label>
+              <Textarea
+                placeholder="Optional context for why these files are being captured"
                 value={snapshotBusinessContext}
                 onChange={(event) => onSetBusinessContext(event.target.value)}
-                rows={2}
-                className="txt-compact-small min-h-16 w-full resize-none rounded-md border border-ui-border-base bg-ui-bg-field px-2 py-2 text-ui-fg-base outline-none transition-colors placeholder:text-ui-fg-muted hover:bg-ui-bg-field-hover focus:shadow-borders-interactive-with-focus"
+                rows={4}
               />
             </div>
 
             <div className="flex flex-col gap-y-2">
-              <Text size="small" leading="compact" weight="plus">
-                توضیحات
-              </Text>
-              <textarea
-                placeholder="توضیحات بیشتر..."
+              <Label className="txt-compact-small-plus">
+                Description
+              </Label>
+              <Textarea
+                placeholder="Optional notes for this snapshot record"
                 value={snapshotDescription}
                 onChange={(event) => onSetDescription(event.target.value)}
-                rows={2}
-                className="txt-compact-small min-h-16 w-full resize-none rounded-md border border-ui-border-base bg-ui-bg-field px-2 py-2 text-ui-fg-base outline-none transition-colors placeholder:text-ui-fg-muted hover:bg-ui-bg-field-hover focus:shadow-borders-interactive-with-focus"
+                rows={4}
               />
             </div>
 
-            <div className="rounded-md border border-ui-border-base bg-ui-bg-subtle px-4 py-3">
+            <div className="rounded-lg border border-ui-border-base bg-ui-bg-subtle px-4 py-3 md:col-span-2">
               <div className="flex items-center justify-between gap-x-4">
                 <Text size="small" leading="compact" className="text-ui-fg-subtle">
-                  فایل‌های انتخاب شده
+                  Selected files
                 </Text>
                 <Text size="small" leading="compact" weight="plus">
                   {selectedCount}
@@ -121,12 +126,10 @@ export const MetadataView: React.FC<MetadataViewProps> = ({
               </div>
             </div>
 
-            <div className="flex items-start gap-x-2 rounded-md border border-ui-border-base bg-ui-bg-subtle px-3 py-2">
-              <Info className="mt-0.5 size-4 flex-shrink-0 text-ui-fg-subtle" />
+            <div className="flex items-start gap-x-2 rounded-lg border border-ui-border-base bg-ui-bg-subtle px-3 py-2 md:col-span-2">
+              <Info className="mt-0.5 size-4 shrink-0 text-ui-fg-subtle" />
               <Text size="small" leading="compact" className="text-ui-fg-subtle">
-                {!snapshotName.trim()
-                  ? "لطفا یک نام برای اسنپ‌شات وارد کنید"
-                  : "اطلاعات لازم وارد شده است. برای ادامه کلیک کنید."}
+                The record will only include files selected in the previous step.
               </Text>
             </div>
           </div>

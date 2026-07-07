@@ -1,7 +1,6 @@
-import { Badge, Button, Container, Text, clsx } from "../../../../../ui/vendor"
+import { Badge, Button, Checkbox, Container, Text, clsx } from "../../../../../ui/vendor"
 import {
   Archive,
-  CheckCircle2,
   Database,
   FileClock,
   Package,
@@ -12,7 +11,7 @@ import { ViewHeader } from "./ViewHeader"
 
 type FileItem = {
   path: string
-  name: string
+  name?: string
   status?: "added" | "modified" | "deleted" | "renamed" | "untracked"
 }
 
@@ -25,12 +24,13 @@ type Props = {
   isAllSelected?: boolean
 }
 
-const truncatePath = (path: string, maxLength: number = 48): string => {
-  if (!path) {
-    return ""
-  }
+const getFileName = (path: string) => {
+  const normalized = path.replace(/\\/g, "/")
+  return normalized.split("/").pop() || path
+}
 
-  if (path.length <= maxLength) {
+const truncatePath = (path: string, maxLength: number = 62): string => {
+  if (!path || path.length <= maxLength) {
     return path
   }
 
@@ -38,20 +38,17 @@ const truncatePath = (path: string, maxLength: number = 48): string => {
   const parts = normalized.split("/")
 
   if (parts.length <= 2) {
-    return `${path.substring(0, maxLength)}...`
+    return `${path.slice(0, maxLength)}...`
   }
 
-  return `.../${parts.slice(-2).join("/")}`
+  return `.../${parts.slice(-3).join("/")}`
 }
 
 const getFileCategory = (path: string): string => {
   const normalized = path.toLowerCase().replace(/\\/g, "/")
   const fileName = normalized.split("/").pop() || normalized
 
-  if (fileName === ".env" || fileName === ".env.example") {
-    return "تنظیمات محیط"
-  }
-
+  if (fileName === ".env" || fileName.includes(".env")) return "Environment"
   if (
     fileName === "package.json" ||
     fileName.includes("tsconfig") ||
@@ -61,57 +58,20 @@ const getFileCategory = (path: string): string => {
     fileName.includes("postcss") ||
     fileName.includes("medusa-config")
   ) {
-    return "پیکربندی پروژه"
+    return "Configuration"
+  }
+  if (fileName.startsWith("readme") || fileName.endsWith(".md")) return "Documentation"
+  if (/\.(png|jpe?g|gif|svg|webp|avif|ico|woff2?|ttf|otf|mp4|webm)$/i.test(fileName)) {
+    return "Asset"
+  }
+  if (normalized.includes("/admin/") || normalized.includes("/components/") || normalized.includes("/views/")) {
+    return "Admin UI"
+  }
+  if (normalized.includes("/src/") || normalized.includes("/api/") || normalized.includes("/modules/")) {
+    return "Source"
   }
 
-  if (
-    fileName.startsWith("readme") ||
-    fileName.endsWith(".md") ||
-    normalized.startsWith("docs/") ||
-    normalized.includes("/docs/")
-  ) {
-    return "مستندات"
-  }
-
-  if (
-    normalized.startsWith("public/") ||
-    normalized.includes("/public/") ||
-    normalized.startsWith("static/") ||
-    normalized.includes("/static/") ||
-    /\.(png|jpe?g|gif|svg|webp|avif|ico|woff2?|ttf|otf|mp4|webm|mp3|wav)$/i.test(fileName)
-  ) {
-    return "فایل عمومی"
-  }
-
-  if (
-    normalized.startsWith("admin/") ||
-    normalized.includes("/admin/") ||
-    normalized.startsWith("routes/") ||
-    normalized.includes("/routes/") ||
-    normalized.startsWith("components/") ||
-    normalized.includes("/components/") ||
-    normalized.startsWith("views/") ||
-    normalized.includes("/views/")
-  ) {
-    return "رابط مدیریت"
-  }
-
-  if (
-    normalized.startsWith("src/") ||
-    normalized.includes("/src/") ||
-    normalized.startsWith("lib/") ||
-    normalized.includes("/lib/") ||
-    normalized.startsWith("server/") ||
-    normalized.includes("/server/") ||
-    normalized.startsWith("api/") ||
-    normalized.includes("/api/") ||
-    normalized.startsWith("modules/") ||
-    normalized.includes("/modules/")
-  ) {
-    return "کد منبع"
-  }
-
-  return "سایر فایل‌ها"
+  return "Workspace"
 }
 
 const getFileIcon = (path: string) => {
@@ -119,22 +79,10 @@ const getFileIcon = (path: string) => {
   const fileName = normalized.split("/").pop() || normalized
   const ext = fileName.split(".").pop() || ""
 
-  if (fileName === ".env" || fileName.includes(".env")) {
-    return Shield
-  }
-
-  if (["json", "yaml", "yml", "lock"].includes(ext)) {
-    return Database
-  }
-
-  if (["png", "jpg", "jpeg", "gif", "svg", "webp", "avif", "ico", "zip"].includes(ext)) {
-    return Archive
-  }
-
-  if (normalized.includes("/components/") || normalized.includes("/views/")) {
-    return Package
-  }
-
+  if (fileName.includes(".env")) return Shield
+  if (["json", "yaml", "yml", "lock"].includes(ext)) return Database
+  if (["png", "jpg", "jpeg", "gif", "svg", "webp", "avif", "ico", "zip"].includes(ext)) return Archive
+  if (normalized.includes("/components/") || normalized.includes("/views/")) return Package
   return FileClock
 }
 
@@ -150,7 +98,6 @@ const getStatusColor = (
       return "red"
     case "renamed":
       return "blue"
-    case "untracked":
     default:
       return "grey"
   }
@@ -159,17 +106,17 @@ const getStatusColor = (
 const getStatusLabel = (status?: string): string => {
   switch (status) {
     case "added":
-      return "افزوده شده"
+      return "Added"
     case "modified":
-      return "تغییر یافته"
+      return "Modified"
     case "deleted":
-      return "حذف شده"
+      return "Deleted"
     case "renamed":
-      return "تغییر نام داده شده"
+      return "Renamed"
     case "untracked":
-      return "ردیابی نشده"
+      return "Untracked"
     default:
-      return ""
+      return "Changed"
   }
 }
 
@@ -190,8 +137,8 @@ export default function SelectingView({
     <div className="flex h-full flex-col">
       <ViewHeader
         icon={<FileClock className="size-4" />}
-        title="انتخاب فایل‌ها"
-        subtitle={`${fileCount} فایل · ${selectedCount} انتخاب شده`}
+        title="Choose files to capture"
+        subtitle={`${fileCount} changed files found · ${selectedCount} selected`}
         tone="blue"
       />
 
@@ -200,29 +147,29 @@ export default function SelectingView({
           <div className="flex items-center justify-between gap-x-3 border-b border-ui-border-base px-4 py-3">
             <div className="flex min-w-0 flex-col gap-y-1">
               <Text size="small" leading="compact" weight="plus">
-                تغییرات قابل ثبت
+                Changed workspace files
               </Text>
               <Text size="small" leading="compact" className="text-ui-fg-subtle">
-                فقط فایل‌های انتخاب‌شده در اسنپ‌شات ذخیره می‌شوند.
+                Only selected files will be written to the file-backed snapshot record.
               </Text>
             </div>
 
             <Button size="small" variant="secondary" onClick={onSelectAll}>
-              انتخاب همه
+              {isAllSelected ? "Clear all" : "Select all"}
             </Button>
           </div>
 
           {fileCount === 0 ? (
-            <div className="flex min-h-40 flex-col items-center justify-center px-6 py-8 text-center">
+            <div className="flex min-h-48 flex-col items-center justify-center px-6 py-8 text-center">
               <div className="flex size-10 items-center justify-center rounded-md border border-ui-border-base bg-ui-bg-subtle">
                 <FileClock className="size-4 text-ui-fg-subtle" />
               </div>
               <Text size="small" leading="compact" className="mt-3 text-ui-fg-subtle">
-                فایل تغییریافته‌ای یافت نشد
+                No changed files were returned by the Git check.
               </Text>
             </div>
           ) : (
-            <div className="divide-y divide-ui-border-base">
+            <div className="max-h-[430px] divide-y divide-ui-border-base overflow-y-auto">
               {safeFiles.map((file) => {
                 const isSelected = safeSelected.includes(file.path)
                 const FileIcon = getFileIcon(file.path)
@@ -232,39 +179,33 @@ export default function SelectingView({
                     key={file.path}
                     type="button"
                     aria-pressed={isSelected}
-                    className="flex w-full items-center gap-x-3 px-4 py-3 text-left outline-none transition-colors hover:bg-ui-bg-subtle focus-visible:shadow-borders-interactive-with-focus"
+                    className={clsx(
+                      "flex w-full items-start gap-x-3 px-4 py-3 text-left outline-none transition-colors hover:bg-ui-bg-subtle focus-visible:shadow-borders-interactive-with-focus",
+                      isSelected ? "bg-ui-bg-subtle/60" : "bg-ui-bg-base"
+                    )}
                     onClick={() => onToggleFile(file.path)}
                   >
-                    <span
-                      className={clsx(
-                        "flex size-5 flex-shrink-0 items-center justify-center rounded-full border",
-                        isSelected
-                          ? "border-ui-border-interactive bg-ui-bg-interactive text-ui-fg-on-color"
-                          : "border-ui-border-base bg-ui-bg-base text-transparent"
-                      )}
-                    >
-                      <CheckCircle2 className="size-3.5" />
+                    <span onClick={(event) => event.stopPropagation()}>
+                      <Checkbox checked={isSelected} onCheckedChange={() => onToggleFile(file.path)} />
                     </span>
 
-                    <span className="flex size-8 flex-shrink-0 items-center justify-center rounded-md border border-ui-border-base bg-ui-bg-subtle">
+                    <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-ui-border-base bg-ui-bg-subtle">
                       <FileIcon className="size-4 text-ui-fg-subtle" />
                     </span>
 
                     <span className="min-w-0 flex-1">
                       <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
                         <Text size="small" leading="compact" weight="plus" className="truncate">
-                          {file.path.split("/").pop()}
+                          {file.name || getFileName(file.path)}
                         </Text>
-                        {file.status && (
-                          <Badge color={getStatusColor(file.status)}>
-                            {getStatusLabel(file.status)}
-                          </Badge>
-                        )}
+                        <Badge color={getStatusColor(file.status)}>
+                          {getStatusLabel(file.status)}
+                        </Badge>
                       </span>
                       <Text
                         size="small"
                         leading="compact"
-                        className="truncate text-ui-fg-subtle"
+                        className="mt-1 truncate text-ui-fg-subtle"
                         title={file.path}
                       >
                         {truncatePath(file.path)} · {getFileCategory(file.path)}
@@ -278,14 +219,14 @@ export default function SelectingView({
         </Container>
       </div>
 
-      {error && (
+      {error ? (
         <div className="mt-2 flex items-start gap-x-2 rounded-md border border-ui-border-base bg-ui-bg-subtle px-3 py-2">
-          <TriangleAlert className="mt-0.5 size-4 flex-shrink-0 text-ui-fg-error" />
+          <TriangleAlert className="mt-0.5 size-4 shrink-0 text-ui-fg-error" />
           <Text size="small" leading="compact" className="text-ui-fg-error">
             {error}
           </Text>
         </div>
-      )}
+      ) : null}
     </div>
   )
 }
