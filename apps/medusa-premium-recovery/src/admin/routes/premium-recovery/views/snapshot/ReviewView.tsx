@@ -1,9 +1,8 @@
 import type { ReactNode } from "react"
 
-import { Container, Text } from "../../../../../ui/vendor"
+import { Text } from "../../../../../ui/vendor"
 import { CheckCircle2 } from "../../../../../ui/vendor/lucide"
 import type { SnapshotUseCase } from "../../types/snapshot-workflow"
-import { ViewHeader } from "./ViewHeader"
 
 export type ReviewViewProps = {
   snapshotName: string
@@ -47,16 +46,9 @@ export const ReviewView = ({
   selectedCount,
 }: ReviewViewProps) => {
   return (
-    <div className="flex flex-col">
-      <ViewHeader
-        icon={<CheckCircle2 className="size-4" />}
-        title="Confirm capture"
-        subtitle={`${selectedCount} selected files will be written to a file-backed record`}
-        tone="green"
-      />
-
-      <div className="py-4">
-        <Container className="overflow-hidden p-0">
+    <div className="flex h-full min-h-0 flex-col justify-center">
+      <div>
+        <div className="overflow-hidden rounded-lg border border-ui-border-base">
           <SummaryRow label="Name" value={snapshotName || "Untitled snapshot record"} />
           <SummaryRow
             label="Use case"
@@ -69,9 +61,9 @@ export const ReviewView = ({
           {snapshotDescription ? (
             <SummaryRow label="Description" value={snapshotDescription} />
           ) : null}
-        </Container>
+        </div>
 
-        <div className="mt-4 flex items-start gap-x-2 rounded-lg border border-ui-border-base bg-ui-bg-subtle px-3 py-2">
+        <div className="mt-3 flex items-start gap-x-2 rounded-lg border border-ui-border-base bg-ui-bg-subtle px-3 py-2">
           <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-ui-fg-success" />
           <Text size="small" leading="compact" className="text-ui-fg-subtle">
             Creating the record will capture the selected workspace files and write a manifest.

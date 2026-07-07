@@ -1,17 +1,13 @@
-import { useCallback, useEffect } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 import {
   Badge,
   Button,
-  Container,
   FocusModal,
-  Heading,
   Text,
 } from "../../../../ui/vendor"
 import {
-  CheckCircle2,
   FileClock,
-  TriangleAlert,
 } from "../../../../ui/vendor/lucide"
 import { getExperienceView } from "../../../../ui/adapters/experience"
 import { useSnapshotMachine } from "../hooks/useSnapshotMachine"
@@ -32,18 +28,6 @@ type Props = {
   fetchGitFiles: () => Promise<any[]>
 }
 
-const progressWidthClass = (progress: number) => {
-  if (progress >= 100) return "w-full"
-  if (progress >= 90) return "w-[90%]"
-  if (progress >= 75) return "w-3/4"
-  if (progress >= 66) return "w-2/3"
-  if (progress >= 50) return "w-1/2"
-  if (progress >= 33) return "w-1/3"
-  if (progress >= 25) return "w-1/4"
-  if (progress > 0) return "w-1/6"
-  return "w-0"
-}
-
 const stepItems = [
   { id: "selecting", label: "Files" },
   { id: "metadata", label: "Details" },
@@ -56,117 +40,101 @@ const getStepIndex = (step: string) => {
   return 0
 }
 
-const ProgressBlock = ({
-  progress,
-  label,
+const getProgressPercent = (step: string) => {
+  const currentStepIndex = getStepIndex(step)
+  return ((currentStepIndex + 1) / stepItems.length) * 100
+}
+
+const WizardHeader = ({
+  title,
+  context,
   step,
+  canClose,
+  isCreating,
+  isError,
+  onClose,
 }: {
-  progress: number
-  label: string
+  title: string
+  context: string
   step: string
+  canClose: boolean
+  isCreating: boolean
+  isError: boolean
+  onClose: () => void
 }) => {
   const currentStepIndex = getStepIndex(step)
+  const progressPercent = getProgressPercent(step)
 
   return (
-    <div className="flex flex-col gap-y-3">
-      <div className="flex items-center justify-between gap-x-3">
-        {stepItems.map((item, index) => {
-          const isActive = index === currentStepIndex
-          const isComplete = index < currentStepIndex
+    <div className="bg-ui-bg-base px-5 pt-4">
+      <div className="flex items-start justify-between gap-x-4 pb-3">
+        <div className="flex min-w-0 items-center gap-x-3">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-ui-border-base bg-ui-bg-subtle shadow-elevation-card-rest">
+            <FileClock className="size-4 text-ui-fg-subtle" />
+          </div>
 
-          return (
-            <div key={item.id} className="flex min-w-0 items-center gap-x-2">
-              <span
-                className={[
-                  "flex size-5 items-center justify-center rounded-full border text-[10px] font-medium",
-                  isActive || isComplete
-                    ? "border-ui-border-interactive bg-ui-bg-interactive text-ui-fg-on-color"
-                    : "border-ui-border-base bg-ui-bg-base text-ui-fg-muted",
-                ].join(" ")}
-              >
-                {index + 1}
-              </span>
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
               <Text
                 size="small"
                 leading="compact"
-                className={isActive ? "text-ui-fg-base" : "text-ui-fg-muted"}
+                weight="plus"
+                id="wizard-title"
+                className="text-lg"
               >
-                {item.label}
+                {title}
               </Text>
+              {isCreating ? <Badge color="blue">Processing</Badge> : null}
+              {isError ? <Badge color="red">Error</Badge> : null}
             </div>
-          )
-        })}
-      </div>
 
-      <div className="h-1.5 overflow-hidden rounded-full bg-ui-bg-subtle">
-        <div
-          className={[
-            "h-full rounded-full bg-ui-bg-interactive transition-all duration-300",
-            progressWidthClass(progress),
-          ].join(" ")}
-        />
-      </div>
-
-      <div className="flex items-center justify-between gap-x-3">
-        <Text size="small" leading="compact" className="text-ui-fg-muted">
-          {label}
-        </Text>
-        <Text size="small" leading="compact" className="text-ui-fg-muted">
-          {Math.max(0, Math.min(100, progress))}%
-        </Text>
-      </div>
-    </div>
-  )
-}
-
-const StatusView = ({
-  title,
-  description,
-  tone,
-  primaryLabel,
-  onPrimary,
-  error,
-}: {
-  title: string
-  description: string
-  tone: "green" | "red" | "blue"
-  primaryLabel: string
-  onPrimary: () => void
-  error?: string | null
-}) => {
-  const Icon = tone === "green" ? CheckCircle2 : tone === "red" ? TriangleAlert : FileClock
-
-  return (
-    <Container className="p-0">
-      <div className="flex min-h-[360px] flex-col items-center justify-center gap-y-5 px-6 py-10 text-center">
-        <div className="flex size-14 items-center justify-center rounded-xl border border-ui-border-base bg-ui-bg-subtle shadow-elevation-card-rest">
-          <Icon
-            className={[
-              "size-6",
-              tone === "green" ? "text-ui-fg-success" : "",
-              tone === "red" ? "text-ui-fg-error" : "",
-              tone === "blue" ? "animate-spin text-ui-fg-subtle" : "",
-            ].join(" ")}
-          />
-        </div>
-
-        <div className="flex max-w-md flex-col gap-y-2">
-          <Heading level="h2">{title}</Heading>
-          <Text size="small" leading="compact" className="text-ui-fg-subtle">
-            {description}
-          </Text>
-          {error ? (
-            <Text size="small" leading="compact" className="text-ui-fg-error">
-              {error}
+            <Text size="small" leading="compact" className="mt-1 text-ui-fg-muted">
+              {context}
             </Text>
-          ) : null}
+          </div>
         </div>
 
-        <Button variant="primary" onClick={onPrimary} disabled={tone === "blue"}>
-          {primaryLabel}
+        <Button
+          variant="secondary"
+          size="small"
+          onClick={onClose}
+          disabled={!canClose}
+          className="shrink-0"
+        >
+          Close
         </Button>
       </div>
-    </Container>
+
+      <div
+        className="relative grid grid-cols-3 overflow-hidden rounded-md border border-ui-border-base bg-ui-bg-subtle"
+        aria-label="Snapshot wizard progress"
+      >
+        <div
+          className="absolute inset-y-0 left-0 bg-ui-bg-interactive transition-[width] duration-200"
+          style={{ width: `${progressPercent}%` }}
+        />
+
+        <div className="relative z-10 grid grid-cols-3 col-span-3">
+          {stepItems.map((item, index) => {
+            const isFilled = index <= currentStepIndex
+
+            return (
+              <div
+                key={item.id}
+                className={[
+                  "flex h-7 items-center justify-center border-r border-ui-border-base/60 px-2 text-[10px] font-semibold uppercase tracking-[0.08em] last:border-r-0",
+                  isFilled
+                    ? "text-ui-fg-on-color"
+                    : "text-ui-fg-muted",
+                ].join(" ")}
+              >
+                {item.label}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -200,6 +168,7 @@ export default function SnapshotWizard({
     closeMachine()
   }, [isOpen, open, closeMachine])
 
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const wizardState = snapshotService.extractState(state)
   const {
     experienceState,
@@ -222,6 +191,14 @@ export default function SnapshotWizard({
 
   const safeFiles = Array.isArray(files) ? files : []
   const safeSelected = Array.isArray(selected) ? selected : []
+  const headerContext =
+    step === "selecting"
+      ? `${safeFiles.length} changed files found - ${safeSelected.length} selected`
+      : step === "metadata"
+        ? `${safeSelected.length} selected files will be captured`
+        : step === "review" || step === "creating"
+          ? `${safeSelected.length} selected files ready for capture`
+          : ui.description
   const nextDisabled =
     ui.nextDisabled ||
     isCreating ||
@@ -355,6 +332,28 @@ export default function SnapshotWizard({
     handleNext,
   ])
 
+  useEffect(() => {
+    if (!isDone) {
+      return
+    }
+
+    setSuccessMessage("Snapshot record created.")
+    send({ type: "CLOSE" })
+    onClose()
+  }, [isDone, send, onClose])
+
+  useEffect(() => {
+    if (!successMessage) {
+      return
+    }
+
+    const timeout = window.setTimeout(() => {
+      setSuccessMessage(null)
+    }, 2600)
+
+    return () => window.clearTimeout(timeout)
+  }, [successMessage])
+
   const renderView = () => {
     switch (experienceState) {
       case "analyzing":
@@ -408,35 +407,19 @@ export default function SnapshotWizard({
 
       case "creating":
         return (
-          <StatusView
-            title={ui.title}
-            description={ui.description}
-            tone="blue"
-            primaryLabel="Creating..."
-            onPrimary={() => undefined}
-          />
-        )
-
-      case "done":
-        return (
-          <StatusView
-            title={ui.title}
-            description={ui.description}
-            tone="green"
-            primaryLabel="Close"
-            onPrimary={handleClose}
+          <AnalyzingView
+            isFetching
+            filesCount={safeSelected.length}
+            error={null}
           />
         )
 
       case "error":
         return (
-          <StatusView
-            title={ui.title}
-            description={ui.description}
-            tone="red"
-            primaryLabel={ui.nextLabel}
-            onPrimary={handleRetry}
-            error={error}
+          <AnalyzingView
+            isFetching={false}
+            filesCount={safeFiles.length}
+            error={error || ui.description}
           />
         )
 
@@ -446,103 +429,76 @@ export default function SnapshotWizard({
   }
 
   return (
-    <FocusModal open={isOpen} onOpenChange={handleOpenChange}>
-      <FocusModal.Content className="!fixed !left-1/2 !top-1/2 z-[1000] !h-[86vh] !max-h-[86vh] !w-[calc(100vw-2rem)] !max-w-[980px] !-translate-x-1/2 !-translate-y-1/2 overflow-hidden rounded-xl border border-ui-border-base bg-ui-bg-base p-0 shadow-elevation-card-hover">
-        <div className="flex h-full min-h-0 flex-col overflow-hidden bg-ui-bg-base">
-          <FocusModal.Header>
-            <div className="flex w-full items-center justify-between gap-x-4">
-              <div className="flex min-w-0 items-center gap-x-3">
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-ui-border-base bg-ui-bg-subtle shadow-elevation-card-rest">
-                  <FileClock className="size-5 text-ui-fg-subtle" />
-                </div>
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Heading level="h2" id="wizard-title">
-                      {ui.title}
-                    </Heading>
-                    {isCreating ? <Badge color="blue">Processing</Badge> : null}
-                    {isDone ? <Badge color="green">Created</Badge> : null}
-                    {isError ? <Badge color="red">Error</Badge> : null}
-                  </div>
+    <>
+      <FocusModal open={isOpen} onOpenChange={handleOpenChange}>
+        <FocusModal.Content className="!fixed !left-1/2 !top-1/2 z-[1000] !h-[84vh] !max-h-[84vh] !w-[calc(100vw-2rem)] !max-w-[940px] !-translate-x-1/2 !-translate-y-1/2 overflow-hidden rounded-xl border border-ui-border-base bg-ui-bg-base p-0 shadow-elevation-card-hover">
+          <div className="flex h-full min-h-0 flex-col overflow-hidden bg-ui-bg-base">
+            <WizardHeader
+              title={ui.title}
+              context={headerContext}
+              step={step}
+              canClose={canClose}
+              isCreating={isCreating}
+              isError={isError}
+              onClose={handleClose}
+            />
 
-                  <Text size="small" leading="compact" className="mt-1 text-ui-fg-muted">
-                    {ui.description}
-                  </Text>
+            <FocusModal.Body className="flex min-h-0 flex-1 flex-col overflow-hidden p-0">
+              <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+                {renderView()}
+              </div>
+            </FocusModal.Body>
+
+            <FocusModal.Footer>
+              <div className="flex w-full items-center justify-between gap-x-3 py-0.5">
+                <Text size="small" leading="compact" className="text-ui-fg-muted">
+                  {safeSelected.length} selected
+                </Text>
+
+                <div className="flex items-center gap-x-2">
+                  {ui.showBack ? (
+                    <Button
+                      size="small"
+                      variant="secondary"
+                      onClick={handleBack}
+                      disabled={isCreating}
+                    >
+                      {ui.backLabel}
+                    </Button>
+                  ) : null}
+
+                  {isError ? (
+                    <Button
+                      size="small"
+                      variant="secondary"
+                      onClick={handleRetry}
+                    >
+                      {ui.nextLabel}
+                    </Button>
+                  ) : null}
+
+                  {!isDone && !isError ? (
+                    <Button
+                      size="small"
+                      variant="primary"
+                      onClick={handleNext}
+                      disabled={nextDisabled}
+                    >
+                      {ui.nextLabel}
+                    </Button>
+                  ) : null}
                 </div>
               </div>
+            </FocusModal.Footer>
+          </div>
+        </FocusModal.Content>
+      </FocusModal>
 
-              <Button
-                variant="secondary"
-                size="small"
-                onClick={handleClose}
-                disabled={!canClose}
-              >
-                Close
-              </Button>
-            </div>
-          </FocusModal.Header>
-
-          {ui.showProgress && !isError && !isDone ? (
-            <div className="border-b border-ui-border-base bg-ui-bg-subtle/40 px-6 py-4">
-              <ProgressBlock
-                progress={ui.progress}
-                label={snapshotService.getStepLabel(experienceState)}
-                step={step}
-              />
-            </div>
-          ) : null}
-
-          <FocusModal.Body className="flex min-h-0 flex-1 flex-col overflow-hidden">
-            <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
-              {renderView()}
-            </div>
-          </FocusModal.Body>
-
-          <FocusModal.Footer>
-            <div className="flex w-full items-center justify-between gap-x-3">
-              <Text size="small" leading="compact" className="text-ui-fg-muted">
-                {safeSelected.length} selected
-              </Text>
-
-              <div className="flex items-center gap-x-2">
-                {ui.showBack ? (
-                  <Button
-                    size="small"
-                    variant="secondary"
-                    onClick={handleBack}
-                    disabled={isCreating}
-                  >
-                    {ui.backLabel}
-                  </Button>
-                ) : null}
-
-                {isError ? (
-                  <Button size="small" variant="secondary" onClick={handleRetry}>
-                    {ui.nextLabel}
-                  </Button>
-                ) : null}
-
-                {!isDone && !isError ? (
-                  <Button
-                    size="small"
-                    variant="primary"
-                    onClick={handleNext}
-                    disabled={nextDisabled}
-                  >
-                    {ui.nextLabel}
-                  </Button>
-                ) : null}
-
-                {isDone ? (
-                  <Button size="small" variant="primary" onClick={handleClose}>
-                    Close
-                  </Button>
-                ) : null}
-              </div>
-            </div>
-          </FocusModal.Footer>
+      {successMessage ? (
+        <div className="fixed bottom-6 left-1/2 z-[1100] -translate-x-1/2 rounded-lg border border-ui-border-base bg-ui-bg-base px-4 py-3 text-sm shadow-elevation-card-hover">
+          {successMessage}
         </div>
-      </FocusModal.Content>
-    </FocusModal>
+      ) : null}
+    </>
   )
 }
