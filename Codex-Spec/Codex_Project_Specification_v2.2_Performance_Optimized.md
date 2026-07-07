@@ -25,7 +25,7 @@ Do not open only the plugin folder unless the task is strictly limited to one fi
 
 The automatic Kernel manages build, backend, restart, Snapshot, Git Backup, Continue Index, Code Map, and health logging.
 
-Codex should edit code, improve the plugin, and report what changed. Codex should not duplicate Kernel-owned operations.
+Codex should edit code, improve the plugin, and report what changed. Codex should not duplicate Kernel-owned operations or manually test green build after each edit.
 
 ## Performance Rule
 
@@ -37,6 +37,7 @@ Avoid broad, unrelated rewrites.
 
 The previous v1 specification and originally uploaded instruction ZIPs are included under `assets/`.
 
+---
 
 <!-- PROJECT.md -->
 
@@ -101,9 +102,11 @@ Codex should:
 - use targeted refactoring when it directly improves the current task,
 - create related files/components/adapters when they reduce complexity or match project architecture,
 - let Kernel handle build/restart/backup/index automatically,
+- never manually test green build after each edit; wait for Kernel output and only fix reported errors,
 - report exact changed files, purpose, and expected Kernel action,
 - avoid broad unrelated rewrites.
 
+---
 
 <!-- 00_HARD_RULES.md -->
 
@@ -124,6 +127,15 @@ Codex must NOT manually run or trigger these operations unless the user explicit
 - Code Map regeneration
 - `.medusa` cleanup
 - health-check loops
+
+
+## 1.1 Code-Only Operating Rule
+
+Codex must focus on code edits only. After editing files, Codex must not manually verify a green build by running build/dev/restart commands. The Development Kernel validates automatically.
+
+If the Kernel or the user later provides a build, TypeScript, Vite, import, or runtime error, Codex should fix the first relevant error only, then stop again and let the Kernel re-validate.
+
+Codex should avoid repeated diagnostic commands when file inspection is enough. This reduces token usage, terminal noise, and interference with Kernel-owned automation.
 
 ## 2. Codex Owns Code Quality
 
@@ -240,6 +252,7 @@ Every response after editing must include:
 
 Do not report manual build/restart/backup commands unless explicitly requested.
 
+---
 
 <!-- 01_ARCHITECTURE_MAP.md -->
 
@@ -355,6 +368,7 @@ must be audited before deletion. Do not remove while build is broken unless that
 
 After build is green, Codex may consolidate duplicates when all imports are mapped and compatibility is preserved.
 
+---
 
 <!-- 02_RECOVERY_PROTOCOL.md -->
 
@@ -464,6 +478,8 @@ Recovery is complete when the Kernel reports or the user confirms:
 
 After code edits, stop and let the Kernel handle rebuild/restart automatically.
 
+Do not run a manual build merely to check whether the build is green. Treat Kernel output as the source of truth. If Kernel output later reports an error, fix that first relevant error and stop again.
+
 Report:
 
 - files changed
@@ -472,6 +488,7 @@ Report:
 - expected Kernel action
 - next recommended action
 
+---
 
 <!-- 03_AUDIT_COMMANDS.md -->
 
@@ -480,6 +497,8 @@ Report:
 Codex should inspect files before meaningful changes.
 
 Do not run build, backend, restart, snapshot, Git backup, Continue Index, or Code Map commands unless the user explicitly requests them.
+
+Do not run manual build checks after each edit. The Kernel is responsible for green/red validation.
 
 ## Inspect package metadata
 
@@ -547,6 +566,7 @@ Kernel-managed operations to avoid:
 
 The plan may include targeted refactoring or new files if directly justified by the task.
 
+---
 
 <!-- 04_DEPENDENCY_GRAPH.md -->
 
@@ -623,6 +643,7 @@ export { default as clsx } from "clsx"
 
 Do not add this if `clsx` is missing.
 
+---
 
 <!-- 05_VENDOR_CONTRACT.md -->
 
@@ -682,8 +703,9 @@ If consumer imports a missing symbol:
 2. Find the intended source.
 3. Verify package/export exists.
 4. Add real vendor export or update consumer.
-5. Build.
+5. Stop and let the Kernel validate automatically; do not run build manually.
 
+---
 
 <!-- 06_DESIGN_TOKEN_SPEC.md -->
 
@@ -751,6 +773,7 @@ The plugin should feel like Medusa plus a premium recovery-specific signature:
 - elegant status badges
 - high-quality empty/loading states
 
+---
 
 <!-- 07_COMPONENT_TREE.md -->
 
@@ -800,9 +823,10 @@ If two components have the same name in different paths:
 
 1. map imports first,
 2. determine which is active,
-3. keep compatibility until build is green,
-4. consolidate only after build is green.
+3. keep compatibility until Kernel reports a green build,
+4. consolidate only after Kernel reports a green build.
 
+---
 
 <!-- 08_FILE_OWNERSHIP_RULES.md -->
 
@@ -812,12 +836,12 @@ If two components have the same name in different paths:
 
 Every edit must have a purpose:
 
-- recover build,
+- recover code so the Kernel can validate the build,
 - implement the requested feature,
 - normalize vendor boundaries,
 - improve a known component,
 - remove duplication in the affected area,
-- polish UI after build is green.
+- polish UI after the Kernel reports a green build.
 
 ## While Broken
 
@@ -839,7 +863,7 @@ Not allowed:
 - delete duplicates without import map,
 - change public architecture without a clear reason.
 
-## After Green Build
+## After Kernel Green Build
 
 Allowed when directly useful for the requested task:
 
@@ -854,6 +878,7 @@ Allowed when directly useful for the requested task:
 
 User approval is required for dependency installation, broad architectural replacement, or large cross-module rewrites.
 
+---
 
 <!-- 09_COMPONENT_STANDARDS.md -->
 
@@ -911,8 +936,9 @@ Icons are semantic.
 
 Do not pass unsupported UI props to SVG icon components.
 
-Use a central icon policy after build is green.
+Use a central icon policy after the Kernel reports a green build.
 
+---
 
 <!-- 10_VISUAL_POLISH_PLAN.md -->
 
@@ -975,6 +1001,7 @@ Codex may split large route files into focused local components when it improves
 
 Do not collapse reusable components back into route files just to reduce file count.
 
+---
 
 <!-- 11_GIT_AND_ROLLBACK_WORKFLOW.md -->
 
@@ -989,6 +1016,7 @@ Codex must not run:
 ```bash
 git add
 git commit
+git push
 git reset
 git checkout
 ```
@@ -1032,6 +1060,7 @@ Rollback risk:
 Kernel backup/snapshot: handled automatically
 ```
 
+---
 
 <!-- 12_CODEX_PROMPT_TEMPLATE.md -->
 
@@ -1077,6 +1106,7 @@ Focus on coding, recovery, feature implementation, and premium plugin improvemen
 Runtime rules:
 
 - Do NOT run `npm run build` unless explicitly requested.
+- Do NOT run `medusa plugin:build` unless explicitly requested.
 - Do NOT run `medusa develop` unless explicitly requested.
 - Do NOT restart the backend unless explicitly requested.
 - Do NOT create snapshots or Git backups.
@@ -1092,16 +1122,18 @@ Coding rules:
 - Targeted refactoring is allowed when it directly supports the task, reduces complexity, removes duplication, or improves maintainability.
 - New files are allowed when directly justified by the task and aligned with existing architecture.
 - Avoid broad unrelated rewrites or changing architecture outside the affected feature.
-- If Kernel reports build errors, fix the first relevant error before expanding scope.
+- Do not manually test whether the build is green after each edit; wait for Kernel/user-provided output.
+- If Kernel reports build errors, fix the first relevant error before expanding scope, then stop and let Kernel re-validate.
 - Preserve premium UI quality; do not replace real UI with placeholders unless emergency safe mode is requested.
 
-After editing report only:
+After editing, stop. Do not build/restart/backup/index. Report only:
 - Files changed
 - Purpose of change
 - Design/refactor choice, if any
 - Expected Kernel action
 - Next recommended action
 
+---
 
 <!-- 13_DEFINITION_OF_DONE.md -->
 
@@ -1117,7 +1149,7 @@ Recovery is done only when the Kernel reports or the user confirms:
 - No TypeScript import/export error remains.
 - No missing module error remains.
 
-Codex should not manually run build or backend commands to prove this unless explicitly requested.
+Codex should not manually run build or backend commands to prove this unless explicitly requested. Codex should not perform a manual green-build test after each edit.
 
 ## Code Quality Done
 
@@ -1147,6 +1179,7 @@ Codex should not manually run build or backend commands to prove this unless exp
 ## Kernel Compatibility Done
 
 - Codex did not run plugin build manually.
+- Codex did not manually test green build after every edit.
 - Codex did not run `medusa develop`.
 - Codex did not restart backend manually.
 - Codex did not clean `.medusa` manually.
@@ -1160,4 +1193,3 @@ Codex should not manually run build or backend commands to prove this unless exp
 - Design/refactor decisions are documented when relevant.
 - Expected Kernel-managed action is documented.
 - Remaining risks are listed.
-

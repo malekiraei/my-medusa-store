@@ -4,6 +4,8 @@ Codex should inspect files before meaningful changes.
 
 Do not run build, backend, restart, snapshot, Git backup, Continue Index, or Code Map commands unless the user explicitly requests them.
 
+Do not run manual build checks after each edit. The Kernel is responsible for green/red validation.
+
 ## Inspect package metadata
 
 Open and inspect:

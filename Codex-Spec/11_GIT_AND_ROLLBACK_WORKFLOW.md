@@ -9,6 +9,7 @@ Codex must not run:
 ```bash
 git add
 git commit
+git push
 git reset
 git checkout
 ```

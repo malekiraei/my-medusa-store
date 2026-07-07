@@ -54,4 +54,4 @@ If consumer imports a missing symbol:
 2. Find the intended source.
 3. Verify package/export exists.
 4. Add real vendor export or update consumer.
-5. Build.
+5. Stop and let the Kernel validate automatically; do not run build manually.

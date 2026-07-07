@@ -44,5 +44,5 @@ If two components have the same name in different paths:
 
 1. map imports first,
 2. determine which is active,
-3. keep compatibility until build is green,
-4. consolidate only after build is green.
+3. keep compatibility until Kernel reports a green build,
+4. consolidate only after Kernel reports a green build.

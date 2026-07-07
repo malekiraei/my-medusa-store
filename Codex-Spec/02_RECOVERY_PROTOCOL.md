@@ -104,6 +104,8 @@ Recovery is complete when the Kernel reports or the user confirms:
 
 After code edits, stop and let the Kernel handle rebuild/restart automatically.
 
+Do not run a manual build merely to check whether the build is green. Treat Kernel output as the source of truth. If Kernel output later reports an error, fix that first relevant error and stop again.
+
 Report:
 
 - files changed

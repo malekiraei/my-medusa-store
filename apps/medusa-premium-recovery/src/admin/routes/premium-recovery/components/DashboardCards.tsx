@@ -83,13 +83,18 @@ const SnapshotActivityTooltip = ({
   }
 
   return (
-    <div className="min-w-[156px] rounded-lg border border-ui-border-base bg-ui-bg-base px-3 py-2.5 text-start shadow-elevation-card-hover">
-      <Text size="small" leading="compact" className="text-[11px] font-medium text-ui-fg-muted">
-        {label}
-      </Text>
-      <div className="mt-2 flex items-center justify-between gap-5">
+    <div className="min-w-[164px] rounded-lg border border-ui-border-base bg-ui-bg-base/95 px-3.5 py-3 text-start shadow-elevation-card-hover ring-1 ring-white/5 backdrop-blur-sm">
+      <div className="flex items-center justify-between gap-4">
+        <Text size="small" leading="compact" className="text-[11px] font-medium text-ui-fg-muted">
+          {label}
+        </Text>
+        <span className="rounded-md bg-ui-bg-subtle px-1.5 py-0.5 text-[10px] font-medium leading-none text-ui-fg-muted">
+          Preview
+        </span>
+      </div>
+      <div className="mt-2.5 flex items-center justify-between gap-5">
         <span className="inline-flex items-center gap-2 text-xs font-medium text-ui-fg-subtle">
-          <span className="size-2 rounded-full bg-ui-fg-base/70" />
+          <span className="size-2 rounded-full bg-current text-ui-fg-interactive" />
           Activity
         </span>
         <Text size="small" leading="compact" weight="plus" className="text-sm text-ui-fg-base">
@@ -277,13 +282,15 @@ export const DashboardCards = ({
           overview ? "lg:grid-cols-[minmax(0,2fr)_minmax(300px,1fr)]" : "grid-cols-1"
         )}
       >
-        <Container className="order-1 h-full min-h-[228px] overflow-hidden rounded-xl border border-ui-border-base bg-ui-bg-base p-0 shadow-elevation-card-rest rtl:lg:order-2">
+        <Container className="order-1 h-full min-h-[252px] overflow-hidden rounded-xl border border-ui-border-base bg-ui-bg-base p-0 shadow-elevation-card-rest rtl:lg:order-2">
           <div
             aria-label="Activity preview chart for the last 30 days"
             tabIndex={-1}
             onMouseDown={(event) => event.preventDefault()}
-            className="relative h-full min-h-[228px] select-none overflow-hidden bg-ui-bg-base px-5 pb-4 pt-4 outline-none focus:outline-none focus-visible:outline-none [&_*:focus-visible]:outline-none [&_*:focus]:outline-none [&_*]:outline-none [&_g]:outline-none [&_path]:outline-none [&_svg]:select-none [&_svg]:outline-none [&_.recharts-active-dot]:outline-none [&_.recharts-active-shape]:outline-none [&_.recharts-layer]:outline-none [&_.recharts-surface]:outline-none [&_.recharts-tooltip-cursor]:outline-none [&_.recharts-wrapper]:outline-none"
+            className="relative h-full min-h-[252px] select-none overflow-hidden bg-ui-bg-base px-5 pb-4 pt-4 outline-none focus:outline-none focus-visible:outline-none [&_*:focus-visible]:outline-none [&_*:focus]:outline-none [&_*]:outline-none [&_g]:outline-none [&_path]:outline-none [&_svg]:select-none [&_svg]:outline-none [&_.recharts-active-dot]:outline-none [&_.recharts-active-shape]:outline-none [&_.recharts-layer]:outline-none [&_.recharts-surface]:outline-none [&_.recharts-tooltip-cursor]:outline-none [&_.recharts-wrapper]:outline-none"
           >
+            <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-gradient-to-br from-ui-bg-subtle/40 via-ui-bg-base to-ui-bg-base" />
+            <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/70 dark:bg-white/10" />
             <div className="relative z-10 flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0 text-start">
                 <div className="flex flex-wrap items-center gap-2">
@@ -303,30 +310,32 @@ export const DashboardCards = ({
               </Text>
             </div>
 
-            <div aria-hidden="true" className="pointer-events-none absolute inset-x-8 bottom-11 top-[5.25rem] rounded-md">
-              <div className="absolute inset-x-0 top-1/4 h-px bg-ui-border-base/25" />
-              <div className="absolute inset-x-0 top-1/2 h-px bg-ui-border-base/35" />
-              <div className="absolute inset-x-0 top-3/4 h-px bg-ui-border-base/25" />
-              <div className="absolute inset-y-0 left-1/4 w-px bg-ui-border-base/10" />
+            <div aria-hidden="true" className="pointer-events-none absolute inset-x-8 bottom-11 top-[5.35rem] rounded-lg">
+              <div className="absolute inset-x-0 top-0 h-px bg-ui-border-base/18" />
+              <div className="absolute inset-x-0 top-1/4 h-px bg-ui-border-base/20" />
+              <div className="absolute inset-x-0 top-1/2 h-px bg-ui-border-base/30" />
+              <div className="absolute inset-x-0 top-3/4 h-px bg-ui-border-base/20" />
+              <div className="absolute inset-x-0 bottom-0 h-px bg-ui-border-base/35" />
+              <div className="absolute inset-y-0 left-1/4 w-px bg-ui-border-base/8" />
               <div className="absolute inset-y-0 left-1/2 w-px bg-ui-border-base/10" />
-              <div className="absolute inset-y-0 left-3/4 w-px bg-ui-border-base/10" />
+              <div className="absolute inset-y-0 left-3/4 w-px bg-ui-border-base/8" />
             </div>
-            <div className="absolute inset-x-5 bottom-4 top-[5rem]">
+            <div className="absolute inset-x-5 bottom-4 top-[5.1rem]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
                 accessibilityLayer={false}
                 className="outline-none focus:outline-none focus-visible:outline-none"
                 data={snapshotActivityPreviewData}
-                margin={{ top: 12, right: 24, bottom: 0, left: 24 }}
+                margin={{ top: 12, right: 26, bottom: 2, left: 26 }}
               >
                 <defs>
                   <linearGradient id="snapshotActivityPreviewFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="currentColor" stopOpacity={0.18} />
-                    <stop offset="58%" stopColor="currentColor" stopOpacity={0.075} />
+                    <stop offset="0%" stopColor="currentColor" stopOpacity={0.22} />
+                    <stop offset="48%" stopColor="currentColor" stopOpacity={0.095} />
                     <stop offset="100%" stopColor="currentColor" stopOpacity={0.018} />
                   </linearGradient>
                   <filter id="snapshotActivityPreviewLineGlow" x="-8%" y="-20%" width="116%" height="140%">
-                    <feGaussianBlur stdDeviation="1.1" result="coloredBlur" />
+                    <feGaussianBlur stdDeviation="0.75" result="coloredBlur" />
                     <feMerge>
                       <feMergeNode in="coloredBlur" />
                       <feMergeNode in="SourceGraphic" />
@@ -347,8 +356,8 @@ export const DashboardCards = ({
                   cursor={{
                     stroke: "currentColor",
                     strokeDasharray: "4 5",
-                    strokeOpacity: 0.22,
-                  strokeWidth: 1,
+                    strokeOpacity: 0.28,
+                    strokeWidth: 1,
                   }}
                   allowEscapeViewBox={{ x: true, y: true }}
                   content={<SnapshotActivityTooltip />}
@@ -370,18 +379,19 @@ export const DashboardCards = ({
                   dataKey="snapshots"
                   name="Preview data"
                   stroke="currentColor"
-                  strokeWidth={2.35}
-                  strokeOpacity={0.68}
+                  strokeWidth={2.65}
+                  strokeOpacity={0.78}
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   filter="url(#snapshotActivityPreviewLineGlow)"
-                  dot={{ r: 2.6, strokeWidth: 1.4, fill: "currentColor", opacity: 0.7 }}
+                  dot={{ r: 2.7, strokeWidth: 1.5, fill: "currentColor", opacity: 0.82 }}
                   activeDot={{
-                    r: 5.4,
-                    stroke: "var(--bg-base)",
-                    strokeWidth: 2.6,
+                    r: 5.8,
+                    stroke: "currentColor",
+                    strokeOpacity: 0.28,
+                    strokeWidth: 7,
                     fill: "currentColor",
-                    opacity: 0.92,
+                    opacity: 0.96,
                   }}
                   isAnimationActive={false}
                   className="text-ui-fg-interactive"

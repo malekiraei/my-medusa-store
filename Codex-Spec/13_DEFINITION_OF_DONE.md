@@ -10,7 +10,7 @@ Recovery is done only when the Kernel reports or the user confirms:
 - No TypeScript import/export error remains.
 - No missing module error remains.
 
-Codex should not manually run build or backend commands to prove this unless explicitly requested.
+Codex should not manually run build or backend commands to prove this unless explicitly requested. Codex should not perform a manual green-build test after each edit.
 
 ## Code Quality Done
 
@@ -40,6 +40,7 @@ Codex should not manually run build or backend commands to prove this unless exp
 ## Kernel Compatibility Done
 
 - Codex did not run plugin build manually.
+- Codex did not manually test green build after every edit.
 - Codex did not run `medusa develop`.
 - Codex did not restart backend manually.
 - Codex did not clean `.medusa` manually.

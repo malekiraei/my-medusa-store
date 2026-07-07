@@ -82,11 +82,12 @@ export const PRMetricCard = ({
   return (
     <article
       className={clsx(
-        "group relative flex h-full min-h-[156px] flex-col overflow-hidden rounded-xl border border-ui-border-base bg-ui-bg-base p-3 shadow-elevation-card-rest transition duration-200 hover:-translate-y-px hover:border-ui-border-strong hover:bg-ui-bg-base-hover hover:shadow-elevation-card-hover",
+        "group relative flex h-full min-h-[168px] flex-col overflow-hidden rounded-xl border border-ui-border-base bg-ui-bg-base p-3.5 shadow-elevation-card-rest transition duration-200 hover:-translate-y-px hover:border-ui-border-strong hover:bg-ui-bg-base-hover hover:shadow-elevation-card-hover",
         identityClass.surface,
         className
       )}
     >
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/70 dark:bg-white/10" />
       <div className={clsx("absolute inset-x-0 bottom-0 h-1", identityClass.accent[tone])} />
 
       <div className="relative flex h-full flex-col text-start">
@@ -94,15 +95,15 @@ export const PRMetricCard = ({
           <div className="flex min-w-0 items-center gap-2.5">
             <div
               className={clsx(
-                "flex aspect-square size-9 shrink-0 items-center justify-center rounded-lg shadow-md ring-1 ring-white/20 transition duration-200 group-hover:scale-[1.02]",
+                "flex aspect-square size-10 shrink-0 items-center justify-center rounded-lg shadow-md ring-1 ring-white/20 transition duration-200 group-hover:scale-[1.02]",
                 identityClass.tile[tone],
                 identityClass.tileShadow[tone]
               )}
             >
-              <Icon className="size-[18px]" strokeWidth={2.2} />
+              <Icon className="size-[19px]" strokeWidth={2.2} />
             </div>
             <div className="min-w-0">
-              <Text className="whitespace-normal break-words text-[10.5px] font-semibold uppercase leading-4 tracking-[0.085em] text-ui-fg-muted">
+              <Text className="whitespace-normal break-words text-[10.5px] font-semibold uppercase leading-4 tracking-[0.08em] text-ui-fg-muted">
                 {title}
               </Text>
             </div>
@@ -123,12 +124,12 @@ export const PRMetricCard = ({
           ) : null}
         </header>
 
-        <div className="mt-3 min-w-0">
-          <div className="whitespace-normal break-words text-[1.28rem] font-semibold leading-[1.13] tracking-tight text-ui-fg-base sm:text-[1.38rem]">
+        <div className="mt-3.5 min-w-0">
+          <div className="whitespace-normal break-words text-[1.3rem] font-semibold leading-[1.12] tracking-tight text-ui-fg-base sm:text-[1.42rem]">
             {value}
           </div>
           {description ? (
-            <Text className="mt-1.5 text-[13px] leading-[18px] text-ui-fg-subtle">
+            <Text className="mt-2 text-[13px] leading-[18px] text-ui-fg-subtle">
               {description}
             </Text>
           ) : null}

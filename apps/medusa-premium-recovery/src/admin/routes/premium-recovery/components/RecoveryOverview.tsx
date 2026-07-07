@@ -183,9 +183,11 @@ export const RecoveryOverview = ({
   const hasKnownSignal = signals.some((signal) => signal.isKnown)
 
   return (
-    <Container className="flex h-full min-h-[228px] w-full flex-col overflow-hidden rounded-xl border border-ui-border-base bg-ui-bg-base p-0 shadow-elevation-card-rest">
+    <Container className="relative flex h-full min-h-[252px] w-full flex-col overflow-hidden rounded-xl border border-ui-border-base bg-ui-bg-base p-0 shadow-elevation-card-rest">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-gradient-to-br from-ui-bg-subtle/35 via-ui-bg-base to-ui-bg-base" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/70 dark:bg-white/10" />
       {!hasKnownSignal ? (
-        <div className="flex flex-1 items-center px-4 py-5">
+        <div className="relative flex flex-1 items-center px-4 py-5">
           <Text size="small" leading="compact" className="text-ui-fg-subtle">
             Overview unavailable until system status resolves.
           </Text>
@@ -193,7 +195,7 @@ export const RecoveryOverview = ({
       ) : null}
 
       {hasKnownSignal ? (
-        <div className="flex flex-col px-1 py-3">
+        <div className="relative flex flex-1 flex-col justify-center px-3 py-3">
           {signals.map((signal, index) => {
             const dotClass = toneDots[signal.tone]
 
@@ -201,11 +203,11 @@ export const RecoveryOverview = ({
               <div
                 key={signal.name}
                 className={clsx(
-                  "flex min-h-[29px] items-center gap-2 rounded-md bg-ui-bg-base px-3 py-1.5 transition duration-150 hover:bg-ui-bg-subtle/55",
-                  index === 0 ? "min-h-[32px]" : ""
+                  "grid min-h-[32px] grid-cols-[auto_minmax(24px,1fr)_auto] items-center gap-2 rounded-md px-1.5 py-1 transition duration-150 hover:bg-ui-bg-subtle/60",
+                  index === 0 ? "min-h-[34px]" : ""
                 )}
               >
-                <div className="flex min-w-0 shrink-0 items-center gap-2">
+                <div className="flex min-w-0 items-center gap-2">
                   <span
                     className={clsx(
                       "size-2 shrink-0 rounded-full",
@@ -217,7 +219,7 @@ export const RecoveryOverview = ({
                     size="small"
                     leading="compact"
                     weight="plus"
-                    className="min-w-0 truncate text-ui-fg-base"
+                    className="min-w-0 whitespace-nowrap text-ui-fg-base"
                   >
                     {signal.name}
                   </Text>
@@ -232,7 +234,7 @@ export const RecoveryOverview = ({
                   size="small"
                   leading="compact"
                   className={clsx(
-                    "max-w-[58%] shrink-0 truncate text-end text-xs leading-4",
+                    "max-w-[150px] shrink-0 truncate text-end text-xs leading-4 xl:max-w-[180px]",
                     signal.isKnown ? dotClass.text : "text-ui-fg-muted"
                   )}
                 >
@@ -244,9 +246,9 @@ export const RecoveryOverview = ({
         </div>
       ) : null}
 
-      <div className="mt-auto px-4 pb-3 pt-1 text-start">
+      <div className="relative mt-auto px-4 pb-3 pt-1 text-start">
         <Text size="small" leading="compact" className="text-xs text-ui-fg-muted">
-          Signals summarize the current Git state and local snapshot records.
+          Signals summarize the current Git state and local records.
         </Text>
       </div>
     </Container>

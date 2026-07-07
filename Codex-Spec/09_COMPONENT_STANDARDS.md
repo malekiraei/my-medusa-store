@@ -52,4 +52,4 @@ Icons are semantic.
 
 Do not pass unsupported UI props to SVG icon components.
 
-Use a central icon policy after build is green.
+Use a central icon policy after the Kernel reports a green build.

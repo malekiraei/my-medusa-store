@@ -40,6 +40,7 @@ Focus on coding, recovery, feature implementation, and premium plugin improvemen
 Runtime rules:
 
 - Do NOT run `npm run build` unless explicitly requested.
+- Do NOT run `medusa plugin:build` unless explicitly requested.
 - Do NOT run `medusa develop` unless explicitly requested.
 - Do NOT restart the backend unless explicitly requested.
 - Do NOT create snapshots or Git backups.
@@ -55,10 +56,11 @@ Coding rules:
 - Targeted refactoring is allowed when it directly supports the task, reduces complexity, removes duplication, or improves maintainability.
 - New files are allowed when directly justified by the task and aligned with existing architecture.
 - Avoid broad unrelated rewrites or changing architecture outside the affected feature.
-- If Kernel reports build errors, fix the first relevant error before expanding scope.
+- Do not manually test whether the build is green after each edit; wait for Kernel/user-provided output.
+- If Kernel reports build errors, fix the first relevant error before expanding scope, then stop and let Kernel re-validate.
 - Preserve premium UI quality; do not replace real UI with placeholders unless emergency safe mode is requested.
 
-After editing report only:
+After editing, stop. Do not build/restart/backup/index. Report only:
 - Files changed
 - Purpose of change
 - Design/refactor choice, if any

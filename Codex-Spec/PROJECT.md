@@ -59,5 +59,6 @@ Codex should:
 - use targeted refactoring when it directly improves the current task,
 - create related files/components/adapters when they reduce complexity or match project architecture,
 - let Kernel handle build/restart/backup/index automatically,
+- never manually test green build after each edit; wait for Kernel output and only fix reported errors,
 - report exact changed files, purpose, and expected Kernel action,
 - avoid broad unrelated rewrites.

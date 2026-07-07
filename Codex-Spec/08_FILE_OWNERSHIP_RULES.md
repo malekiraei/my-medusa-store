@@ -4,12 +4,12 @@
 
 Every edit must have a purpose:
 
-- recover build,
+- recover code so the Kernel can validate the build,
 - implement the requested feature,
 - normalize vendor boundaries,
 - improve a known component,
 - remove duplication in the affected area,
-- polish UI after build is green.
+- polish UI after the Kernel reports a green build.
 
 ## While Broken
 
@@ -31,7 +31,7 @@ Not allowed:
 - delete duplicates without import map,
 - change public architecture without a clear reason.
 
-## After Green Build
+## After Kernel Green Build
 
 Allowed when directly useful for the requested task:
 

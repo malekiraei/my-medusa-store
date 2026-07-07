@@ -23,7 +23,7 @@ Do not open only the plugin folder unless the task is strictly limited to one fi
 
 The automatic Kernel manages build, backend, restart, Snapshot, Git Backup, Continue Index, Code Map, and health logging.
 
-Codex should edit code, improve the plugin, and report what changed. Codex should not duplicate Kernel-owned operations.
+Codex should edit code, improve the plugin, and report what changed. Codex should not duplicate Kernel-owned operations or manually test green build after each edit.
 
 ## Performance Rule
 

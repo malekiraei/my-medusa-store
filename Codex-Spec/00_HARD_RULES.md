@@ -16,6 +16,15 @@ Codex must NOT manually run or trigger these operations unless the user explicit
 - `.medusa` cleanup
 - health-check loops
 
+
+## 1.1 Code-Only Operating Rule
+
+Codex must focus on code edits only. After editing files, Codex must not manually verify a green build by running build/dev/restart commands. The Development Kernel validates automatically.
+
+If the Kernel or the user later provides a build, TypeScript, Vite, import, or runtime error, Codex should fix the first relevant error only, then stop again and let the Kernel re-validate.
+
+Codex should avoid repeated diagnostic commands when file inspection is enough. This reduces token usage, terminal noise, and interference with Kernel-owned automation.
+
 ## 2. Codex Owns Code Quality
 
 Codex's role is coding, recovery, feature implementation, plugin improvement, and targeted technical cleanup.
