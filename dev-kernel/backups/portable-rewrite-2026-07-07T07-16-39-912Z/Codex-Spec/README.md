@@ -6,7 +6,7 @@ Use this package inside VS Code/Codex for the Medusa Premium Recovery plugin.
 
 Open the workspace root:
 
-`${workspaceFolder}`
+`C:\Users\H.M\my-medusa-store`
 
 Do not open only the plugin folder unless the task is strictly limited to one file.
 

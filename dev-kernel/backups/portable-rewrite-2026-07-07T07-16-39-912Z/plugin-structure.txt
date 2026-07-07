@@ -1,6 +1,6 @@
 Folder PATH listing
 Volume serial number is 000000D2 5A81:BA71
-${workspaceFolder}\APPS\PREMIUM-RECOVERY-PLUGIN
+C:\USERS\H.M\MY-MEDUSA-STORE\APPS\PREMIUM-RECOVERY-PLUGIN
 +---apps
 |   \---backend
 |       +---node_modules

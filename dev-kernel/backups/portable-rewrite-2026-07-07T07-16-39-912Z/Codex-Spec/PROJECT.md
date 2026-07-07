@@ -4,7 +4,7 @@
 
 Root workspace:
 
-`${workspaceFolder}`
+`C:\Users\H.M\my-medusa-store`
 
 Plugin:
 

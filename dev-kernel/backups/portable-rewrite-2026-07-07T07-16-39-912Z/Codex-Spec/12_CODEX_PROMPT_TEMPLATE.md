@@ -6,7 +6,7 @@ Paste this into Codex:
 
 You are working in VS Code on:
 
-`${workspaceFolder}`
+`C:\Users\H.M\my-medusa-store`
 
 Important:
 

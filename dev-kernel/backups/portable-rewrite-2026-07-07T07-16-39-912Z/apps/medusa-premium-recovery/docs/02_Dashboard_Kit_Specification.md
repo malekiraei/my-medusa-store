@@ -298,7 +298,7 @@ But it must not copy any brand directly.
 
 After each step:
 
-cd ${workspaceFolder}\apps\medusa-premium-recovery
+cd C:\Users\H.M\my-medusa-store\apps\medusa-premium-recovery
 npm run build
 
 Build failure means stop and fix.

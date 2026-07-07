@@ -1,0 +1,78 @@
+{
+  "mode": "apply",
+  "projectRoot": "C:\\Users\\H.M\\my-medusa-store",
+  "scannedFiles": 239,
+  "changedFiles": 8,
+  "createdAt": "2026-07-07T07:16:39.914Z",
+  "ignoredDirs": [
+    "node_modules",
+    ".git",
+    ".medusa",
+    "dist",
+    "build",
+    ".next",
+    ".turbo",
+    "coverage",
+    ".yalc",
+    "dev-kernel/reports",
+    "dev-kernel/backups",
+    ".premium-recovery",
+    "apps/backend/.premium-recovery",
+    "apps\\backend\\.premium-recovery"
+  ],
+  "rules": [
+    "Replace hardcoded project root with ${workspaceFolder}",
+    "Replace uppercase hardcoded project root with ${workspaceFolder}",
+    "Replace old root slash variant with ${workspaceFolder}"
+  ],
+  "changes": [
+    {
+      "file": "apps\\medusa-premium-recovery\\docs\\02_Dashboard_Kit_Specification.md",
+      "appliedRules": [
+        "Replace hardcoded project root with ${workspaceFolder}"
+      ]
+    },
+    {
+      "file": "Codex-Spec\\12_CODEX_PROMPT_TEMPLATE.md",
+      "appliedRules": [
+        "Replace hardcoded project root with ${workspaceFolder}"
+      ]
+    },
+    {
+      "file": "Codex-Spec\\Codex_Project_Specification_v2.0.md",
+      "appliedRules": [
+        "Replace hardcoded project root with ${workspaceFolder}"
+      ]
+    },
+    {
+      "file": "Codex-Spec\\Codex_Project_Specification_v2.1_Kernel_Compatible.md",
+      "appliedRules": [
+        "Replace hardcoded project root with ${workspaceFolder}"
+      ]
+    },
+    {
+      "file": "Codex-Spec\\Codex_Project_Specification_v2.2_Performance_Optimized.md",
+      "appliedRules": [
+        "Replace hardcoded project root with ${workspaceFolder}"
+      ]
+    },
+    {
+      "file": "Codex-Spec\\PROJECT.md",
+      "appliedRules": [
+        "Replace hardcoded project root with ${workspaceFolder}"
+      ]
+    },
+    {
+      "file": "Codex-Spec\\README.md",
+      "appliedRules": [
+        "Replace hardcoded project root with ${workspaceFolder}"
+      ]
+    },
+    {
+      "file": "plugin-structure.txt",
+      "appliedRules": [
+        "Replace hardcoded project root with ${workspaceFolder}"
+      ]
+    }
+  ]
+}
