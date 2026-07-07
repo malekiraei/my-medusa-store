@@ -223,6 +223,12 @@ export default function SnapshotWizard({
 
   const safeFiles = Array.isArray(files) ? files : []
   const safeSelected = Array.isArray(selected) ? selected : []
+  const nextDisabled =
+    ui.nextDisabled ||
+    isCreating ||
+    isAnalyzing ||
+    (step === "selecting" && safeSelected.length === 0) ||
+    (step === "metadata" && !name.trim())
 
   const handleClose = useCallback(() => {
     if (!canClose) {
@@ -331,7 +337,7 @@ export default function SnapshotWizard({
         return
       }
 
-      if (event.key === "ArrowRight" && !ui.nextDisabled) {
+      if (event.key === "ArrowRight" && !nextDisabled) {
         event.preventDefault()
         handleNext()
       }
@@ -344,7 +350,7 @@ export default function SnapshotWizard({
     canClose,
     isDone,
     ui.showBack,
-    ui.nextDisabled,
+    nextDisabled,
     handleClose,
     handleBack,
     handleNext,
@@ -522,7 +528,7 @@ export default function SnapshotWizard({
                     size="small"
                     variant="primary"
                     onClick={handleNext}
-                    disabled={ui.nextDisabled || isCreating || isAnalyzing}
+                    disabled={nextDisabled}
                   >
                     {ui.nextLabel}
                   </Button>
