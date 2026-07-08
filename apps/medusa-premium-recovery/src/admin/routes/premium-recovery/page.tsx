@@ -1,8 +1,11 @@
 import type { ComponentProps } from "react"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { defineRouteConfig } from "@medusajs/admin-sdk"
 
-import { Container, Heading } from "../../../ui/vendor"
+import {
+  Container,
+  Heading,
+} from "../../../ui/vendor"
 import { ShieldCheck } from "../../../ui/vendor/lucide"
 import DashboardCards from "./components/DashboardCards"
 import RecoveryOverview from "./components/RecoveryOverview"
@@ -25,6 +28,8 @@ export const config = defineRouteConfig({
 
 const PremiumRecoveryPage = () => {
   const [isSnapshotWizardOpen, setIsSnapshotWizardOpen] = useState(false)
+  const [pendingRecordRevealId, setPendingRecordRevealId] = useState<string | null>(null)
+  const recordsSectionRef = useRef<HTMLDivElement | null>(null)
   const recoveryStatus = useRecoveryStatus()
   const gitChanges = useGitChanges()
   const restorePoints = useRestorePoints()
@@ -81,9 +86,43 @@ const PremiumRecoveryPage = () => {
       if (!result.success) {
         throw new Error(result.error || "Failed to create restore point")
       }
+
+      const createdRecord = result.data?.restore_point
+
+      setPendingRecordRevealId(
+        createdRecord && typeof createdRecord.id === "string"
+          ? createdRecord.id
+          : "__latest__"
+      )
     },
     [restorePoints.createPoint]
   )
+
+  useEffect(() => {
+    if (
+      isSnapshotWizardOpen ||
+      restorePoints.loading ||
+      !pendingRecordRevealId ||
+      restorePoints.points.length === 0
+    ) {
+      return
+    }
+
+    const timeout = window.setTimeout(() => {
+      recordsSectionRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      })
+      setPendingRecordRevealId(null)
+    }, 120)
+
+    return () => window.clearTimeout(timeout)
+  }, [
+    isSnapshotWizardOpen,
+    pendingRecordRevealId,
+    restorePoints.loading,
+    restorePoints.points.length,
+  ])
 
   return (
     <Container className="mx-auto max-w-[1180px] space-y-3 p-3 sm:p-4 lg:p-5">
@@ -113,10 +152,13 @@ const PremiumRecoveryPage = () => {
         }
       />
 
-      <RestoreTimeline
-        points={restorePoints.points}
-        loading={restorePoints.loading}
-      />
+      <div ref={recordsSectionRef}>
+        <RestoreTimeline
+          points={restorePoints.points}
+          loading={restorePoints.loading}
+          revealPointId={pendingRecordRevealId}
+        />
+      </div>
 
       <SnapshotWizard
         isOpen={isSnapshotWizardOpen}

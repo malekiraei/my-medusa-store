@@ -1,14 +1,15 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
-import { Badge, Button, Container, Heading, Text } from "../../../../ui/vendor"
+import { Badge, Button, Container, Heading, Input, Text } from "../../../../ui/vendor"
 import {
   Archive,
   CheckCircle2,
   Clock3,
   Database,
   FileClock,
-  FolderClock,
+  Search,
   TriangleAlert,
+  X,
 } from "../../../../ui/vendor/lucide"
 import type { SnapshotRecord } from "../types/snapshot-workflow"
 
@@ -17,6 +18,7 @@ export type RestorePoint = SnapshotRecord
 type RestoreTimelineProps = {
   points: RestorePoint[]
   loading: boolean
+  revealPointId?: string | null
 }
 
 const getUseCaseLabel = (useCase: RestorePoint["use_case"]) => {
@@ -52,6 +54,30 @@ const getFileCount = (point: RestorePoint) => {
 
 const getManifestFiles = (point: RestorePoint) => {
   return Array.isArray(point.manifest_files) ? point.manifest_files : []
+}
+
+const matchesSearch = (point: RestorePoint, searchValue: string) => {
+  const normalizedSearchValue = searchValue.trim().toLowerCase()
+
+  if (!normalizedSearchValue) {
+    return true
+  }
+
+  const manifestFiles = getManifestFiles(point)
+  const haystack = [
+    point.id,
+    point.name,
+    point.description,
+    point.business_context,
+    point.hash,
+    point.storage_path,
+    getUseCaseLabel(point.use_case),
+    formatDate(point.created_at),
+    ...point.files,
+    ...manifestFiles.map((file) => file.path),
+  ].filter(Boolean).join(" ").toLowerCase()
+
+  return haystack.includes(normalizedSearchValue)
 }
 
 const formatBytes = (value: number) => {
@@ -307,8 +333,27 @@ const TimelineItem = ({
 export const RestoreTimeline = ({
   points,
   loading,
+  revealPointId = null,
 }: RestoreTimelineProps) => {
   const [selectedPointId, setSelectedPointId] = useState<string | null>(null)
+  const [searchValue, setSearchValue] = useState("")
+  const visiblePoints = points.filter((point) => matchesSearch(point, searchValue))
+  const normalizedSearchValue = searchValue.trim()
+
+  useEffect(() => {
+    if (!revealPointId || points.length === 0) {
+      return
+    }
+
+    const pointToReveal =
+      revealPointId === "__latest__"
+        ? points[0]
+        : points.find((point) => point.id === revealPointId)
+
+    if (pointToReveal) {
+      setSelectedPointId(pointToReveal.id)
+    }
+  }, [points, revealPointId])
 
   if (loading && points.length === 0) {
     return <LoadingState />
@@ -320,10 +365,10 @@ export const RestoreTimeline = ({
 
   return (
     <Container className="overflow-hidden p-0">
-      <div className="flex items-start justify-between gap-x-4 border-b border-ui-border-base px-6 py-4">
+      <div className="flex flex-col gap-4 border-b border-ui-border-base px-6 py-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex min-w-0 items-start gap-x-3">
           <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-ui-border-base bg-ui-bg-subtle">
-            <FolderClock className="size-4 text-ui-fg-subtle" />
+            <FileClock className="size-4 text-ui-fg-subtle" />
           </div>
           <div className="min-w-0">
             <Heading level="h2">Snapshot Records</Heading>
@@ -333,11 +378,48 @@ export const RestoreTimeline = ({
           </div>
         </div>
 
-        <Badge color="grey">{points.length} records</Badge>
+        <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center lg:w-auto">
+          <div className="relative min-w-0 flex-1 lg:w-80">
+            <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-ui-fg-muted" />
+            <Input
+              value={searchValue}
+              onChange={(event) => setSearchValue(event.target.value)}
+              placeholder="Search records"
+              className="pl-8 pr-8"
+            />
+            {searchValue ? (
+              <button
+                type="button"
+                aria-label="Clear record search"
+                className="absolute right-2 top-1/2 flex size-5 -translate-y-1/2 items-center justify-center rounded-md text-ui-fg-muted transition-colors hover:bg-ui-bg-subtle hover:text-ui-fg-base"
+                onClick={() => setSearchValue("")}
+              >
+                <X className="size-3.5" />
+              </button>
+            ) : null}
+          </div>
+
+          <Badge color="grey">
+            {normalizedSearchValue
+              ? `${visiblePoints.length} of ${points.length}`
+              : `${points.length} records`}
+          </Badge>
+        </div>
       </div>
 
       <div className="divide-y divide-ui-border-base">
-        {points.map((point) => (
+        {visiblePoints.length === 0 ? (
+          <div className="flex min-h-40 flex-col items-center justify-center px-6 py-10 text-center">
+            <Text size="small" leading="compact" weight="plus">
+              No matching records
+            </Text>
+            <Text size="small" leading="compact" className="mt-1 text-ui-fg-subtle">
+              Try another name, path, hash, use case, or date.
+            </Text>
+          </div>
+        ) : null}
+
+        {visiblePoints.map((point) => (
           <TimelineItem
             key={point.id}
             point={point}

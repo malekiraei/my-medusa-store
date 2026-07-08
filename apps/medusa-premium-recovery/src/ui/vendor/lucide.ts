@@ -11,9 +11,11 @@ export {
   Package,
   PackageSearch,
   RefreshCw,
+  Search,
   Shield,
   ShieldAlert,
   ShieldCheck,
   Sparkles,
   TriangleAlert,
+  X,
 } from "lucide-react"

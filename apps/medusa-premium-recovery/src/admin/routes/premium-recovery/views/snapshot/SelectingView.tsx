@@ -1,11 +1,15 @@
-import { Badge, Button, Checkbox, Text, clsx } from "../../../../../ui/vendor"
+import { useMemo, useState } from "react"
+
+import { Badge, Button, Checkbox, Input, Text, clsx } from "../../../../../ui/vendor"
 import {
   Archive,
   Database,
   FileClock,
   Package,
+  Search,
   Shield,
   TriangleAlert,
+  X,
 } from "../../../../../ui/vendor/lucide"
 
 type FileItem = {
@@ -127,16 +131,67 @@ export default function SelectingView({
   onSelectAll = () => {},
   isAllSelected = false,
 }: Props) {
+  const [searchValue, setSearchValue] = useState("")
   const safeFiles = Array.isArray(files) ? files : []
   const safeSelected = Array.isArray(selectedFiles) ? selectedFiles : []
   const fileCount = safeFiles.length
+  const normalizedSearchValue = searchValue.trim().toLowerCase()
+  const visibleFiles = useMemo(() => {
+    if (!normalizedSearchValue) {
+      return safeFiles
+    }
+
+    return safeFiles.filter((file) => {
+      const haystack = [
+        file.name || getFileName(file.path),
+        file.path,
+        getFileCategory(file.path),
+        getStatusLabel(file.status),
+      ].join(" ").toLowerCase()
+
+      return haystack.includes(normalizedSearchValue)
+    })
+  }, [normalizedSearchValue, safeFiles])
 
   return (
     <div className="flex min-h-full flex-col">
-      <div className="flex shrink-0 justify-end pb-3">
-        <Button size="small" variant="secondary" onClick={onSelectAll}>
-          {isAllSelected ? "Clear all" : "Select all"}
-        </Button>
+      <div className="flex shrink-0 flex-col gap-2 py-3 md:flex-row md:items-center md:justify-between">
+        <div className="flex min-w-0 items-center gap-x-3">
+          <Text size="small" leading="compact" weight="plus">
+            Workspace files
+          </Text>
+          {normalizedSearchValue ? (
+            <Text size="small" leading="compact" className="text-ui-fg-subtle">
+              {visibleFiles.length} matches
+            </Text>
+          ) : null}
+        </div>
+
+        <div className="flex min-w-0 items-center gap-x-2">
+          <div className="relative min-w-0 flex-1 md:w-72">
+            <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-ui-fg-muted" />
+            <Input
+              value={searchValue}
+              onChange={(event) => setSearchValue(event.target.value)}
+              placeholder="Search files"
+              className="pl-8 pr-8"
+            />
+            {searchValue ? (
+              <button
+                type="button"
+                aria-label="Clear file search"
+                className="absolute right-2 top-1/2 flex size-5 -translate-y-1/2 items-center justify-center rounded-md text-ui-fg-muted transition-colors hover:bg-ui-bg-subtle hover:text-ui-fg-base"
+                onClick={() => setSearchValue("")}
+              >
+                <X className="size-3.5" />
+              </button>
+            ) : null}
+          </div>
+
+          <Button size="small" variant="secondary" onClick={onSelectAll}>
+            {isAllSelected ? "Clear all" : "Select all"}
+          </Button>
+        </div>
       </div>
 
       {fileCount === 0 ? (
@@ -150,7 +205,18 @@ export default function SelectingView({
         </div>
       ) : (
         <div className="divide-y divide-ui-border-base">
-          {safeFiles.map((file) => {
+          {visibleFiles.length === 0 ? (
+            <div className="flex min-h-40 flex-col items-center justify-center px-6 py-8 text-center">
+              <Text size="small" leading="compact" weight="plus">
+                No matching files
+              </Text>
+              <Text size="small" leading="compact" className="mt-1 text-ui-fg-subtle">
+                Try another file name, path, status, or category.
+              </Text>
+            </div>
+          ) : null}
+
+          {visibleFiles.map((file) => {
             const isSelected = safeSelected.includes(file.path)
             const FileIcon = getFileIcon(file.path)
 
@@ -160,7 +226,7 @@ export default function SelectingView({
                 type="button"
                 aria-pressed={isSelected}
                 className={clsx(
-                  "flex w-full items-start gap-x-3 px-1 py-3 text-left outline-none transition-colors hover:bg-ui-bg-subtle focus-visible:shadow-borders-interactive-with-focus",
+                  "flex w-full items-start gap-x-3 py-3 text-left outline-none transition-colors hover:bg-ui-bg-subtle focus-visible:shadow-borders-interactive-with-focus",
                   isSelected ? "bg-ui-bg-subtle/60" : "bg-ui-bg-base"
                 )}
                 onClick={() => onToggleFile(file.path)}
