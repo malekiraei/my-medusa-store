@@ -40,11 +40,6 @@ const getStepIndex = (step: string) => {
   return 0
 }
 
-const getProgressPercent = (step: string) => {
-  const currentStepIndex = getStepIndex(step)
-  return ((currentStepIndex + 1) / stepItems.length) * 100
-}
-
 const WizardHeader = ({
   title,
   context,
@@ -63,13 +58,12 @@ const WizardHeader = ({
   onClose: () => void
 }) => {
   const currentStepIndex = getStepIndex(step)
-  const progressPercent = getProgressPercent(step)
 
   return (
-    <div className="bg-ui-bg-base px-5 pt-4">
-      <div className="flex items-start justify-between gap-x-4 pb-3">
+    <div className="bg-ui-bg-base px-5 pt-5">
+      <div className="flex items-start justify-between gap-x-4 pb-4">
         <div className="flex min-w-0 items-center gap-x-3">
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-ui-border-base bg-ui-bg-subtle shadow-elevation-card-rest">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-ui-border-base bg-ui-bg-subtle shadow-elevation-card-rest">
             <FileClock className="size-4 text-ui-fg-subtle" />
           </div>
 
@@ -80,7 +74,7 @@ const WizardHeader = ({
                 leading="compact"
                 weight="plus"
                 id="wizard-title"
-                className="text-lg"
+                className="text-xl"
               >
                 {title}
               </Text>
@@ -106,33 +100,26 @@ const WizardHeader = ({
       </div>
 
       <div
-        className="relative grid grid-cols-3 overflow-hidden rounded-md border border-ui-border-base bg-ui-bg-subtle"
+        className="grid h-8 w-full grid-cols-3 overflow-hidden rounded-md border border-ui-border-base bg-ui-bg-subtle shadow-elevation-card-rest"
         aria-label="Snapshot wizard progress"
       >
-        <div
-          className="absolute inset-y-0 left-0 bg-ui-bg-interactive transition-[width] duration-200"
-          style={{ width: `${progressPercent}%` }}
-        />
+        {stepItems.map((item, index) => {
+          const isFilled = index <= currentStepIndex
 
-        <div className="relative z-10 grid grid-cols-3 col-span-3">
-          {stepItems.map((item, index) => {
-            const isFilled = index <= currentStepIndex
-
-            return (
-              <div
-                key={item.id}
-                className={[
-                  "flex h-7 items-center justify-center border-r border-ui-border-base/60 px-2 text-[10px] font-semibold uppercase tracking-[0.08em] last:border-r-0",
-                  isFilled
-                    ? "text-ui-fg-on-color"
-                    : "text-ui-fg-muted",
-                ].join(" ")}
-              >
-                {item.label}
-              </div>
-            )
-          })}
-        </div>
+          return (
+            <div
+              key={item.id}
+              className={[
+                "flex h-full items-center justify-center border-r border-ui-border-base/70 px-2 text-[10px] font-semibold uppercase tracking-[0.08em] transition-colors last:border-r-0",
+                isFilled
+                  ? "bg-ui-bg-interactive text-ui-fg-on-color"
+                  : "bg-ui-bg-subtle text-ui-fg-muted",
+              ].join(" ")}
+            >
+              {item.label}
+            </div>
+          )
+        })}
       </div>
     </div>
   )
@@ -205,6 +192,7 @@ export default function SnapshotWizard({
     isAnalyzing ||
     (step === "selecting" && safeSelected.length === 0) ||
     (step === "metadata" && !name.trim())
+  const isFileSelectionStep = experienceState === "selecting"
 
   const handleClose = useCallback(() => {
     if (!canClose) {
@@ -443,8 +431,18 @@ export default function SnapshotWizard({
               onClose={handleClose}
             />
 
-            <FocusModal.Body className="flex min-h-0 flex-1 flex-col overflow-hidden p-0">
-              <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+            <FocusModal.Body
+              className={[
+                "min-h-0 flex-1 p-0",
+                isFileSelectionStep ? "overflow-y-auto" : "overflow-hidden",
+              ].join(" ")}
+            >
+              <div
+                className={[
+                  "px-5",
+                  isFileSelectionStep ? "min-h-full" : "h-full min-h-0",
+                ].join(" ")}
+              >
                 {renderView()}
               </div>
             </FocusModal.Body>
