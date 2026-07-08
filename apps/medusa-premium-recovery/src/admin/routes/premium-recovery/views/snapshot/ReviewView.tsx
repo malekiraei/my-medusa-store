@@ -27,7 +27,7 @@ const SummaryRow = ({
   value: ReactNode
 }) => {
   return (
-    <div className="grid gap-2 border-b border-ui-border-base px-4 py-3 last:border-b-0 md:grid-cols-[11rem_minmax(0,1fr)] md:items-start">
+    <div className="grid gap-2 border-b border-ui-border-base px-4 py-3 last:border-b-0 md:grid-cols-[10rem_minmax(0,1fr)] md:items-start">
       <Text size="small" leading="compact" className="text-ui-fg-subtle">
         {label}
       </Text>
@@ -48,7 +48,7 @@ export const ReviewView = ({
   return (
     <div className="flex h-full min-h-0 flex-col justify-center">
       <div>
-        <div className="overflow-hidden rounded-lg border border-ui-border-base">
+        <div className="overflow-hidden rounded-xl border border-ui-border-base bg-ui-bg-component shadow-elevation-card-rest">
           <SummaryRow label="Name" value={snapshotName || "Untitled snapshot record"} />
           <SummaryRow
             label="Use case"
@@ -63,7 +63,7 @@ export const ReviewView = ({
           ) : null}
         </div>
 
-        <div className="mt-3 flex items-start gap-x-2 rounded-lg border border-ui-border-base bg-ui-bg-subtle px-3 py-2">
+        <div className="mt-3 flex items-start gap-x-2 rounded-xl border border-ui-border-base bg-ui-bg-subtle px-3 py-3">
           <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-ui-fg-success" />
           <Text size="small" leading="compact" className="text-ui-fg-subtle">
             Creating the record will capture the selected workspace files and write a manifest.

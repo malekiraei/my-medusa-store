@@ -11,11 +11,11 @@ export default function AnalyzingView({ isFetching, filesCount, error }: Props) 
   return (
     <div className="flex h-full min-h-0 flex-col justify-center">
       <div>
-        <div className="flex min-h-56 flex-col items-center justify-center px-6 py-8 text-center">
+        <div className="mx-auto flex min-h-56 max-w-lg flex-col items-center justify-center rounded-2xl border border-ui-border-base bg-ui-bg-component px-6 py-8 text-center shadow-elevation-card-rest">
           {isFetching ? (
             <>
-              <div className="flex size-12 items-center justify-center rounded-lg border border-ui-border-base bg-ui-bg-subtle shadow-elevation-card-rest">
-                <FileClock className="size-5 animate-spin text-ui-fg-subtle" />
+              <div className="flex size-12 items-center justify-center rounded-xl border border-ui-border-base bg-ui-bg-subtle shadow-elevation-card-rest">
+                <FileClock className="size-5 animate-spin text-ui-fg-base" />
               </div>
               <Text size="small" leading="compact" className="mt-4 text-ui-fg-subtle">
                 Checking changed files in the current workspace.
@@ -23,7 +23,7 @@ export default function AnalyzingView({ isFetching, filesCount, error }: Props) 
             </>
           ) : error ? (
             <>
-              <div className="flex size-12 items-center justify-center rounded-lg border border-ui-border-base bg-ui-bg-subtle shadow-elevation-card-rest">
+              <div className="flex size-12 items-center justify-center rounded-xl border border-ui-border-base bg-ui-bg-subtle shadow-elevation-card-rest">
                 <TriangleAlert className="size-5 text-ui-fg-error" />
               </div>
               <Text size="small" leading="compact" className="mt-4 max-w-md text-ui-fg-error">
@@ -32,8 +32,8 @@ export default function AnalyzingView({ isFetching, filesCount, error }: Props) 
             </>
           ) : (
             <>
-              <div className="flex size-12 items-center justify-center rounded-lg border border-ui-border-base bg-ui-bg-subtle shadow-elevation-card-rest">
-                <FileClock className="size-5 text-ui-fg-subtle" />
+              <div className="flex size-12 items-center justify-center rounded-xl border border-ui-border-base bg-ui-bg-subtle shadow-elevation-card-rest">
+                <FileClock className="size-5 text-ui-fg-base" />
               </div>
               <Text size="small" leading="compact" weight="plus" className="mt-4">
                 {filesCount} changed files found

@@ -40,7 +40,7 @@ export const MetadataView = ({
 }: MetadataViewProps) => {
   return (
     <div className="flex h-full min-h-0 flex-col justify-center py-4">
-      <div className="grid gap-3 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2">
           <div className="flex flex-col gap-y-1.5">
             <Label className="txt-compact-small-plus">
               Name
@@ -51,6 +51,7 @@ export const MetadataView = ({
               value={snapshotName}
               onChange={(event) => onSetName(event.target.value)}
               autoFocus
+              className="bg-ui-bg-field"
             />
             {!snapshotName.trim() ? (
               <Text size="small" leading="compact" className="text-ui-fg-error">
@@ -67,7 +68,7 @@ export const MetadataView = ({
               value={snapshotUseCase}
               onValueChange={(value) => onSetUseCase(value as SnapshotUseCase)}
             >
-              <Select.Trigger>
+              <Select.Trigger className="bg-ui-bg-field">
                 <Select.Value placeholder="Select use case" />
               </Select.Trigger>
               <Select.Content>
@@ -89,6 +90,7 @@ export const MetadataView = ({
               value={snapshotBusinessContext}
               onChange={(event) => onSetBusinessContext(event.target.value)}
               rows={2}
+              className="min-h-[74px] resize-none bg-ui-bg-field"
             />
           </div>
 
@@ -101,10 +103,11 @@ export const MetadataView = ({
               value={snapshotDescription}
               onChange={(event) => onSetDescription(event.target.value)}
               rows={2}
+              className="min-h-[74px] resize-none bg-ui-bg-field"
             />
           </div>
 
-          <div className="rounded-lg border border-ui-border-base bg-ui-bg-subtle px-4 py-2.5">
+          <div className="rounded-xl border border-ui-border-base bg-ui-bg-component px-4 py-3 shadow-elevation-card-rest">
             <div className="flex items-center justify-between gap-x-4">
               <Text size="small" leading="compact" className="text-ui-fg-subtle">
                 Selected files
@@ -115,7 +118,7 @@ export const MetadataView = ({
             </div>
           </div>
 
-          <div className="flex items-start gap-x-2 rounded-lg border border-ui-border-base bg-ui-bg-subtle px-3 py-2">
+          <div className="flex items-start gap-x-2 rounded-xl border border-ui-border-base bg-ui-bg-subtle px-3 py-3">
             <Info className="mt-0.5 size-4 shrink-0 text-ui-fg-subtle" />
             <Text size="small" leading="compact" className="text-ui-fg-subtle">
               The record will only include files selected in the previous step.

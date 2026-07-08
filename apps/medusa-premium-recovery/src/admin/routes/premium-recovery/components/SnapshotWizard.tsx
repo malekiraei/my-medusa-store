@@ -7,6 +7,7 @@ import {
   Text,
 } from "../../../../ui/vendor"
 import {
+  CheckCircle2,
   FileClock,
 } from "../../../../ui/vendor/lucide"
 import { getExperienceView } from "../../../../ui/adapters/experience"
@@ -63,8 +64,8 @@ const WizardHeader = ({
     <div className="bg-ui-bg-base px-5 pt-5">
       <div className="flex items-start justify-between gap-x-4 pb-4">
         <div className="flex min-w-0 items-center gap-x-3">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-ui-border-base bg-ui-bg-subtle shadow-elevation-card-rest">
-            <FileClock className="size-4 text-ui-fg-subtle" />
+          <div className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-ui-border-base bg-ui-bg-component shadow-elevation-card-rest">
+            <FileClock className="size-4 text-ui-fg-base" />
           </div>
 
           <div className="min-w-0">
@@ -100,22 +101,26 @@ const WizardHeader = ({
       </div>
 
       <div
-        className="grid h-8 w-full grid-cols-3 overflow-hidden rounded-md border border-ui-border-base bg-ui-bg-subtle shadow-elevation-card-rest"
+        className="grid h-9 w-full grid-cols-3 overflow-hidden rounded-lg border border-ui-border-base bg-ui-bg-field shadow-elevation-card-rest"
         aria-label="Snapshot wizard progress"
       >
         {stepItems.map((item, index) => {
           const isFilled = index <= currentStepIndex
+          const isActive = index === currentStepIndex
+          const isComplete = index < currentStepIndex
 
           return (
             <div
               key={item.id}
               className={[
-                "flex h-full items-center justify-center border-r border-ui-border-base/70 px-2 text-[10px] font-semibold uppercase tracking-[0.08em] transition-colors last:border-r-0",
+                "flex h-full items-center justify-center gap-x-1.5 border-r border-ui-border-base px-2 text-[10px] font-semibold uppercase tracking-[0.08em] transition-colors last:border-r-0",
                 isFilled
-                  ? "bg-ui-bg-interactive text-ui-fg-on-color"
-                  : "bg-ui-bg-subtle text-ui-fg-muted",
+                  ? "bg-ui-bg-interactive text-ui-fg-on-color shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]"
+                  : "bg-ui-bg-field text-ui-fg-muted",
               ].join(" ")}
+              aria-current={isActive ? "step" : undefined}
             >
+              {isComplete ? <CheckCircle2 className="size-3" /> : null}
               {item.label}
             </div>
           )
@@ -419,7 +424,7 @@ export default function SnapshotWizard({
   return (
     <>
       <FocusModal open={isOpen} onOpenChange={handleOpenChange}>
-        <FocusModal.Content className="!fixed !left-1/2 !top-1/2 z-[1000] !h-[84vh] !max-h-[84vh] !w-[calc(100vw-2rem)] !max-w-[940px] !-translate-x-1/2 !-translate-y-1/2 overflow-hidden rounded-xl border border-ui-border-base bg-ui-bg-base p-0 shadow-elevation-card-hover">
+        <FocusModal.Content className="!fixed !left-1/2 !top-1/2 z-[1000] !h-[84vh] !max-h-[84vh] !w-[calc(100vw-2rem)] !max-w-[940px] !-translate-x-1/2 !-translate-y-1/2 overflow-hidden rounded-2xl border border-ui-border-base bg-ui-bg-base p-0 shadow-elevation-card-hover ring-1 ring-ui-border-base">
           <div className="flex h-full min-h-0 flex-col overflow-hidden bg-ui-bg-base">
             <WizardHeader
               title={ui.title}

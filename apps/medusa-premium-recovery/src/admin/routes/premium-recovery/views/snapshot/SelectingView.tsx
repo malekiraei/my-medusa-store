@@ -155,7 +155,7 @@ export default function SelectingView({
 
   return (
     <div className="flex min-h-full flex-col">
-      <div className="flex shrink-0 flex-col gap-2 py-3 md:flex-row md:items-center md:justify-between">
+      <div className="sticky top-0 z-10 -mx-5 flex shrink-0 flex-col gap-2 border-b border-ui-border-base bg-ui-bg-base/95 px-5 py-3 backdrop-blur md:flex-row md:items-center md:justify-between">
         <div className="flex min-w-0 items-center gap-x-3">
           <Text size="small" leading="compact" weight="plus">
             Workspace files
@@ -168,13 +168,13 @@ export default function SelectingView({
         </div>
 
         <div className="flex min-w-0 items-center gap-x-2">
-          <div className="relative min-w-0 flex-1 md:w-72">
+          <div className="relative min-w-0 flex-1 md:w-80">
             <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-ui-fg-muted" />
             <Input
               value={searchValue}
               onChange={(event) => setSearchValue(event.target.value)}
               placeholder="Search files"
-              className="pl-8 pr-8"
+              className="bg-ui-bg-field pl-8 pr-8"
             />
             {searchValue ? (
               <button
@@ -204,7 +204,7 @@ export default function SelectingView({
           </Text>
         </div>
       ) : (
-        <div className="divide-y divide-ui-border-base">
+        <div className="flex flex-col gap-1 py-3">
           {visibleFiles.length === 0 ? (
             <div className="flex min-h-40 flex-col items-center justify-center px-6 py-8 text-center">
               <Text size="small" leading="compact" weight="plus">
@@ -226,22 +226,31 @@ export default function SelectingView({
                 type="button"
                 aria-pressed={isSelected}
                 className={clsx(
-                  "flex w-full items-start gap-x-3 py-3 text-left outline-none transition-colors hover:bg-ui-bg-subtle focus-visible:shadow-borders-interactive-with-focus",
-                  isSelected ? "bg-ui-bg-subtle/60" : "bg-ui-bg-base"
+                  "group flex w-full items-start gap-x-3 rounded-lg border px-3 py-3 text-left outline-none transition-all hover:bg-ui-bg-component-hover focus-visible:shadow-borders-interactive-with-focus",
+                  isSelected
+                    ? "border-ui-border-base bg-ui-bg-subtle shadow-elevation-card-rest"
+                    : "border-transparent bg-ui-bg-base"
                 )}
                 onClick={() => onToggleFile(file.path)}
               >
-                <span onClick={(event) => event.stopPropagation()}>
+                <span className="pt-1" onClick={(event) => event.stopPropagation()}>
                   <Checkbox checked={isSelected} onCheckedChange={() => onToggleFile(file.path)} />
                 </span>
 
-                <span className="flex size-8 shrink-0 items-center justify-center rounded-md border border-ui-border-base bg-ui-bg-subtle">
-                  <FileIcon className="size-4 text-ui-fg-subtle" />
+                <span
+                  className={clsx(
+                    "flex size-9 shrink-0 items-center justify-center rounded-lg border shadow-elevation-card-rest transition-colors",
+                    isSelected
+                      ? "border-ui-border-base bg-ui-bg-component"
+                      : "border-ui-border-base bg-ui-bg-subtle"
+                  )}
+                >
+                  <FileIcon className="size-4 text-ui-fg-base" />
                 </span>
 
                 <span className="min-w-0 flex-1">
-                  <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                    <Text size="small" leading="compact" weight="plus" className="truncate">
+                  <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+                    <Text size="small" leading="compact" weight="plus" className="min-w-0 truncate">
                       {file.name || getFileName(file.path)}
                     </Text>
                     <Badge color={getStatusColor(file.status)}>
