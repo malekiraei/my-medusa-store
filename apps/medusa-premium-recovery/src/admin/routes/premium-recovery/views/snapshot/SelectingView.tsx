@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 
-import { Badge, Button, Checkbox, Input, Text, clsx } from "../../../../../ui/vendor"
+import { Badge, Button, Input, Text, clsx } from "../../../../../ui/vendor"
 import {
   Archive,
   Database,
@@ -30,21 +30,6 @@ type Props = {
 const getFileName = (path: string) => {
   const normalized = path.replace(/\\/g, "/")
   return normalized.split("/").pop() || path
-}
-
-const truncatePath = (path: string, maxLength = 68): string => {
-  if (!path || path.length <= maxLength) {
-    return path
-  }
-
-  const normalized = path.replace(/\\/g, "/")
-  const parts = normalized.split("/")
-
-  if (parts.length <= 2) {
-    return `${path.slice(0, maxLength)}...`
-  }
-
-  return `.../${parts.slice(-3).join("/")}`
 }
 
 const getFileCategory = (path: string): string => {
@@ -84,7 +69,7 @@ const getFileIcon = (path: string) => {
 
   if (fileName.includes(".env")) return Shield
   if (["json", "yaml", "yml", "lock"].includes(ext)) return Database
-  if (["png", "jpg", "jpeg", "gif", "svg", "webp", "avif", "ico", "zip"].includes(ext)) return Archive
+  if (["png", "jpg", "jpeg", "gif", "svg", "webp", "avif", "ico"].includes(ext)) return Archive
   if (normalized.includes("/components/") || normalized.includes("/views/")) return Package
   return FileClock
 }
@@ -100,7 +85,7 @@ const getStatusColor = (
     case "deleted":
       return "red"
     case "renamed":
-      return "blue"
+      return "grey"
     default:
       return "grey"
   }
@@ -158,7 +143,7 @@ export default function SelectingView({
       <div className="sticky top-0 z-10 -mx-5 flex shrink-0 flex-col gap-2 border-b border-ui-border-base bg-ui-bg-base/95 px-5 py-3 backdrop-blur md:flex-row md:items-center md:justify-between">
         <div className="flex min-w-0 items-center gap-x-3">
           <Text size="small" leading="compact" weight="plus">
-            Workspace files
+            Snapshot-ready files
           </Text>
           {normalizedSearchValue ? (
             <Text size="small" leading="compact" className="text-ui-fg-subtle">
@@ -200,11 +185,11 @@ export default function SelectingView({
             <FileClock className="size-4 text-ui-fg-subtle" />
           </div>
           <Text size="small" leading="compact" className="mt-3 text-ui-fg-subtle">
-            No changed files were returned by the Git check.
+            No snapshot-ready changed files were returned by the Git check.
           </Text>
         </div>
       ) : (
-        <div className="flex flex-col gap-1 py-3">
+        <div className="py-3">
           {visibleFiles.length === 0 ? (
             <div className="flex min-h-40 flex-col items-center justify-center px-6 py-8 text-center">
               <Text size="small" leading="compact" weight="plus">
@@ -216,59 +201,111 @@ export default function SelectingView({
             </div>
           ) : null}
 
-          {visibleFiles.map((file) => {
-            const isSelected = safeSelected.includes(file.path)
-            const FileIcon = getFileIcon(file.path)
+          {visibleFiles.length > 0 ? (
+            <div className="overflow-x-auto rounded-lg border border-ui-border-base bg-ui-bg-base shadow-elevation-card-rest">
+              <div className="grid min-w-[760px] grid-cols-[2.25rem_2.25rem_minmax(12rem,1.1fr)_8rem_6.5rem_minmax(16rem,1.4fr)] items-center gap-x-2 border-b border-ui-border-base bg-ui-bg-subtle px-3 py-2">
+                <span />
+                <span />
+                <Text size="small" leading="compact" className="text-ui-fg-subtle">
+                  File
+                </Text>
+                <Text size="small" leading="compact" className="text-ui-fg-subtle">
+                  Category
+                </Text>
+                <Text size="small" leading="compact" className="text-ui-fg-subtle">
+                  Status
+                </Text>
+                <Text size="small" leading="compact" className="text-ui-fg-subtle">
+                  Path
+                </Text>
+              </div>
 
-            return (
-              <button
-                key={file.path}
-                type="button"
-                aria-pressed={isSelected}
-                className={clsx(
-                  "group flex w-full items-start gap-x-3 rounded-lg border px-3 py-3 text-left outline-none transition-all hover:bg-ui-bg-component-hover focus-visible:shadow-borders-interactive-with-focus",
-                  isSelected
-                    ? "border-ui-border-base bg-ui-bg-subtle shadow-elevation-card-rest"
-                    : "border-transparent bg-ui-bg-base"
-                )}
-                onClick={() => onToggleFile(file.path)}
-              >
-                <span className="pt-1" onClick={(event) => event.stopPropagation()}>
-                  <Checkbox checked={isSelected} onCheckedChange={() => onToggleFile(file.path)} />
-                </span>
+              <div className="divide-y divide-ui-border-base">
+                {visibleFiles.map((file) => {
+                  const isSelected = safeSelected.includes(file.path)
+                  const FileIcon = getFileIcon(file.path)
+                  const fileName = file.name || getFileName(file.path)
+                  const category = getFileCategory(file.path)
+                  const statusLabel = getStatusLabel(file.status)
 
-                <span
-                  className={clsx(
-                    "flex size-9 shrink-0 items-center justify-center rounded-lg border shadow-elevation-card-rest transition-colors",
-                    isSelected
-                      ? "border-ui-border-base bg-ui-bg-component"
-                      : "border-ui-border-base bg-ui-bg-subtle"
-                  )}
-                >
-                  <FileIcon className="size-4 text-ui-fg-base" />
-                </span>
+                  return (
+                    <button
+                      key={file.path}
+                      type="button"
+                      aria-pressed={isSelected}
+                      className={clsx(
+                        "grid min-w-[760px] w-full grid-cols-[2.25rem_2.25rem_minmax(12rem,1.1fr)_8rem_6.5rem_minmax(16rem,1.4fr)] items-center gap-x-2 px-3 py-2 text-start outline-none transition-colors hover:bg-ui-bg-component-hover focus-visible:shadow-borders-interactive-with-focus",
+                        isSelected ? "bg-ui-bg-subtle" : "bg-ui-bg-base"
+                      )}
+                      onClick={() => onToggleFile(file.path)}
+                    >
+                      <span
+                        className={clsx(
+                          "flex size-5 items-center justify-center rounded-full border transition-all",
+                          isSelected
+                            ? "border-ui-fg-base bg-ui-fg-base shadow-[0_0_0_3px_rgba(0,0,0,0.08)]"
+                            : "border-ui-border-strong bg-ui-bg-base group-hover:border-ui-fg-muted"
+                        )}
+                        aria-hidden="true"
+                      >
+                        <span
+                          className={clsx(
+                            "size-2 rounded-full transition-all",
+                            isSelected ? "scale-100 bg-ui-bg-base" : "scale-0 bg-transparent"
+                          )}
+                        />
+                      </span>
 
-                <span className="min-w-0 flex-1">
-                  <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
-                    <Text size="small" leading="compact" weight="plus" className="min-w-0 truncate">
-                      {file.name || getFileName(file.path)}
-                    </Text>
-                    <Badge color={getStatusColor(file.status)}>
-                      {getStatusLabel(file.status)}
-                    </Badge>
-                  </span>
-                  <Text
-                    size="small"
-                    leading="compact"
-                    className="mt-1 truncate text-ui-fg-subtle"
-                    title={file.path}
-                  >
-                    {truncatePath(file.path)} - {getFileCategory(file.path)}
-                  </Text>
-                </span>
-              </button>
-            )
-          })}
+                      <span
+                        className={clsx(
+                          "flex size-7 items-center justify-center rounded-md border transition-colors",
+                          isSelected
+                            ? "border-ui-border-base bg-ui-bg-component"
+                            : "border-ui-border-base bg-ui-bg-subtle"
+                        )}
+                      >
+                        <FileIcon className="size-3.5 text-ui-fg-base" />
+                      </span>
+
+                      <Text
+                        size="small"
+                        leading="compact"
+                        weight="plus"
+                        className="min-w-0 truncate"
+                        title={fileName}
+                      >
+                        {fileName}
+                      </Text>
+
+                      <Text
+                        size="small"
+                        leading="compact"
+                        className="min-w-0 truncate text-ui-fg-subtle"
+                        title={category}
+                      >
+                        {category}
+                      </Text>
+
+                      <span className="min-w-0">
+                        <Badge color={getStatusColor(file.status)} className="max-w-full truncate">
+                          {statusLabel}
+                        </Badge>
+                      </span>
+
+                      <Text
+                        size="small"
+                        leading="compact"
+                        className="min-w-0 truncate text-ui-fg-subtle"
+                        title={file.path}
+                      >
+                        {file.path}
+                      </Text>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          ) : null}
         </div>
       )}
 

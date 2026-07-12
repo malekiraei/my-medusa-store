@@ -1,9 +1,4 @@
-// src/admin/routes/premium-recovery/hooks/useGitChanges.ts
-// ============================================================
-// ✅ اصلاح mapping - استفاده از status برای تشخیص نوع تغییر
-// ============================================================
-
-import { useState, useCallback, useRef } from "react"
+import { useCallback, useRef, useState } from "react"
 
 import { sdk } from "../../../lib/client"
 
@@ -11,35 +6,34 @@ export type ChangedFile = {
   path: string
   status: "added" | "deleted" | "modified" | "untracked"
   business_impact?: string
+  scope?: string
+  file_kind?: string
+  policy_version?: string
+  eligibility_reason?: string
+  eligibility_warnings?: string[]
 }
 
 type ApiChange = {
   path?: string
-  status?: string  // ← "M ", " M", "D ", " D", "??", etc.
+  status?: string
   type?: "added" | "deleted" | "modified"
+  business_impact?: string
+  scope?: string
+  file_kind?: string
+  policy_version?: string
+  reason?: string
+  warnings?: string[]
 }
 
-// ============================================================
-// تشخیص نوع تغییر از status
-// ============================================================
-function getChangeType(status: string): "added" | "deleted" | "modified" | "untracked" {
-  if (!status) return "modified"
-  
+const getChangeType = (
+  status: string
+): "added" | "deleted" | "modified" | "untracked" => {
   const trimmed = status.trim()
-  
-  // untracked
+
   if (trimmed === "??") return "untracked"
-  
-  // added
-  if (trimmed.includes("A") || trimmed === "??") return "added"
-  
-  // deleted
   if (trimmed.includes("D")) return "deleted"
-  
-  // renamed
-  if (trimmed.includes("R")) return "modified"
-  
-  // modified (default)
+  if (trimmed.includes("A")) return "added"
+
   return "modified"
 }
 
@@ -67,29 +61,29 @@ export const useGitChanges = () => {
         cache: "no-store",
         signal: controller.signal,
       })
-      console.log("📡 Git API Response:", data)
-
       const changes: ApiChange[] = Array.isArray(data?.changes)
         ? data.changes
         : []
-
-      // ============================================================
-      // ✅ mapping صحیح با استفاده از status
-      // ============================================================
       const formatted: ChangedFile[] = changes
-        .filter((c) => typeof c?.path === "string" && c.path.trim().length > 0)
         .map((change) => {
           const status = change.status || ""
-          const type = getChangeType(status)
-          
+          const changeType = getChangeType(status)
+          const path = typeof change.path === "string"
+            ? change.path.replace(/\\/g, "/").trim()
+            : ""
+
           return {
-            path: change.path!,
-            status: type === "untracked" ? "untracked" : type,
-            business_impact: "normal",
+            path,
+            status: changeType,
+            business_impact: change.business_impact || "normal",
+            scope: change.scope,
+            file_kind: change.file_kind,
+            policy_version: change.policy_version,
+            eligibility_reason: change.reason,
+            eligibility_warnings: Array.isArray(change.warnings) ? change.warnings : [],
           }
         })
-
-      console.log(`✅ ${formatted.length} files mapped`)
+        .filter((file) => file.path.length > 0)
 
       if (requestVersion === requestVersionRef.current) {
         setFiles(formatted)
@@ -101,11 +95,12 @@ export const useGitChanges = () => {
         return []
       }
 
-      if (typeof err?.status === "number") {
-        err = new Error(`Git API Error: ${err.status}`)
-      }
-
-      const message = err instanceof Error ? err.message : "Unknown error"
+      const errorValue = typeof err?.status === "number"
+        ? new Error(`Git API Error: ${err.status}`)
+        : err
+      const message = errorValue instanceof Error
+        ? errorValue.message
+        : "Unknown error"
 
       if (requestVersion === requestVersionRef.current) {
         setError(message)

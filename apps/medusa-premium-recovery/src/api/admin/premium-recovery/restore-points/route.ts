@@ -2,12 +2,16 @@ import { randomUUID } from "node:crypto"
 
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 
+import {
+  evaluateSnapshotPaths,
+  toPublicEligibilityError,
+} from "../_services/file-eligibility-policy"
 import { resolveGitRoot } from "../_services/git-resolver"
-import { captureSnapshotFiles, normalizeSelectedPaths } from "../_services/snapshot-capture"
+import { attachRestoreReadiness } from "../_services/restore-point-classifier"
+import { captureSnapshotFiles } from "../_services/snapshot-capture"
 import {
   createManifest,
   readManifest,
-  type RestorePointSummary,
   writeManifest,
 } from "../_services/snapshot-manifest"
 import {
@@ -45,11 +49,18 @@ const getRequestBody = async (req: MedusaRequest) => {
   return {}
 }
 
+type RestorePointWithReadiness = Awaited<ReturnType<typeof attachRestoreReadiness>>
+
 const getRestorePoints = async () => {
+  const workspaceRoot = await resolveGitRoot()
   const restorePoints = await Promise.all(
     (await listRestorePointDirectories()).map(async (directory) => {
       try {
-        return await readManifest(directory)
+        return await attachRestoreReadiness({
+          point: await readManifest(directory),
+          workspaceRoot,
+          restorePointDirectory: directory,
+        })
       } catch {
         return null
       }
@@ -57,7 +68,7 @@ const getRestorePoints = async () => {
   )
 
   return restorePoints
-    .filter((point): point is RestorePointSummary => Boolean(point))
+    .filter((point): point is RestorePointWithReadiness => Boolean(point))
     .sort((a, b) => b.created_at.localeCompare(a.created_at))
 }
 
@@ -98,21 +109,25 @@ const createRestorePoint = async (body: Record<string, unknown>) => {
     }
   }
 
-  let normalizedFiles: ReturnType<typeof normalizeSelectedPaths>
+  const eligibility = await evaluateSnapshotPaths({
+    workspaceRoot,
+    selectedPaths: files as string[],
+    mode: "snapshot-create",
+  })
 
-  try {
-    normalizedFiles = normalizeSelectedPaths(workspaceRoot, files as string[])
-  } catch (error) {
+  if (!eligibility.valid) {
     return {
-      error: error instanceof Error ? error.message : "Invalid file path",
+      error: "Some selected files are not eligible for snapshot capture",
       statusCode: 400,
+      rejected_files: eligibility.rejected.map(toPublicEligibilityError),
+      policy_version: eligibility.policy_version,
     }
   }
 
   const id = randomUUID()
   const createdAt = new Date().toISOString()
   const filesDirectory = await ensureRestorePointFilesDirectory(id)
-  const capturedFiles = await captureSnapshotFiles(normalizedFiles, filesDirectory)
+  const capturedFiles = await captureSnapshotFiles(eligibility.approved, filesDirectory)
   const manifest = createManifest({
     id,
     name,
@@ -121,6 +136,18 @@ const createRestorePoint = async (body: Record<string, unknown>) => {
     useCase,
     createdAt,
     files: capturedFiles,
+    policyVersion: eligibility.policy_version,
+    eligibilitySummary: {
+      policy_version: eligibility.policy_version,
+      approved_files_count: eligibility.approved.length,
+      rejected_files_count: 0,
+      warning_count: eligibility.approved.reduce(
+        (sum, file) => sum + file.eligibility.warnings.length,
+        0
+      ),
+      scopes: [...new Set(eligibility.approved.map((file) => file.scope))],
+      total_size: eligibility.total_size,
+    },
   })
 
   await writeManifest(manifest)
@@ -153,6 +180,8 @@ export async function POST(
     if ("error" in result) {
       jsonResponse(res, result.statusCode, {
         message: result.error,
+        rejected_files: result.rejected_files,
+        policy_version: result.policy_version,
       })
       return
     }

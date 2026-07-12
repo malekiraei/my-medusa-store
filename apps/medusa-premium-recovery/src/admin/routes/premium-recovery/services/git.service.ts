@@ -65,12 +65,17 @@ async function fetchGitFiles(signal?: AbortSignal): Promise<SnapshotFile[]> {
 
   const files = rawChanges
     .map((c: any) => ({
-      path: c.path || c.filePath || "",
+      path: String(c.path || c.filePath || "").replace(/\\/g, "/").trim(),
       status: normalizeGitStatus(c.status || c.type),
       oldPath: c.oldPath || "",
       business_impact: c.business_impact || "normal",
+      scope: c.scope,
+      file_kind: c.file_kind,
+      policy_version: c.policy_version,
+      eligibility_reason: c.reason,
+      eligibility_warnings: Array.isArray(c.warnings) ? c.warnings : [],
     }))
-    .filter((f: SnapshotFile) => f.path.trim().length > 0)
+    .filter((f: SnapshotFile) => f.path.length > 0)
 
   console.log(`✅ ${files.length} files normalized from git`)
   return files

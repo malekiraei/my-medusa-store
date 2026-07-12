@@ -59,10 +59,11 @@ const WizardHeader = ({
   onClose: () => void
 }) => {
   const currentStepIndex = getStepIndex(step)
+  const progressWidth = `${((currentStepIndex + 1) / stepItems.length) * 100}%`
 
   return (
-    <div className="bg-ui-bg-base px-5 pt-5">
-      <div className="flex items-start justify-between gap-x-4 pb-4">
+    <div className="border-b border-ui-border-base bg-ui-bg-base">
+      <div className="flex items-start justify-between gap-x-4 px-5 pb-4 pt-5">
         <div className="flex min-w-0 items-center gap-x-3">
           <div className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-ui-border-base bg-ui-bg-component shadow-elevation-card-rest">
             <FileClock className="size-4 text-ui-fg-base" />
@@ -79,7 +80,7 @@ const WizardHeader = ({
               >
                 {title}
               </Text>
-              {isCreating ? <Badge color="blue">Processing</Badge> : null}
+              {isCreating ? <Badge color="green">Processing</Badge> : null}
               {isError ? <Badge color="red">Error</Badge> : null}
             </div>
 
@@ -101,30 +102,40 @@ const WizardHeader = ({
       </div>
 
       <div
-        className="grid h-9 w-full grid-cols-3 overflow-hidden rounded-lg border border-ui-border-base bg-ui-bg-field shadow-elevation-card-rest"
+        className="relative -mx-px h-9 w-[calc(100%+2px)] overflow-hidden bg-ui-bg-field"
         aria-label="Snapshot wizard progress"
       >
-        {stepItems.map((item, index) => {
-          const isFilled = index <= currentStepIndex
-          const isActive = index === currentStepIndex
-          const isComplete = index < currentStepIndex
+        <div
+          className="absolute inset-y-0 start-0 bg-ui-fg-base shadow-[0_0_22px_rgba(0,0,0,0.22),inset_0_1px_0_rgba(255,255,255,0.22),inset_0_-1px_0_rgba(0,0,0,0.2)] transition-[width] duration-500 ease-out"
+          style={{ width: progressWidth }}
+        />
+        <div
+          className="pointer-events-none absolute inset-y-0 start-0 bg-gradient-to-r from-transparent via-ui-bg-base/20 to-transparent opacity-60 transition-[width] duration-500 ease-out"
+          style={{ width: progressWidth }}
+        />
 
-          return (
-            <div
-              key={item.id}
-              className={[
-                "flex h-full items-center justify-center gap-x-1.5 border-r border-ui-border-base px-2 text-[10px] font-semibold uppercase tracking-[0.08em] transition-colors last:border-r-0",
-                isFilled
-                  ? "bg-ui-bg-interactive text-ui-fg-on-color shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]"
-                  : "bg-ui-bg-field text-ui-fg-muted",
-              ].join(" ")}
-              aria-current={isActive ? "step" : undefined}
-            >
-              {isComplete ? <CheckCircle2 className="size-3" /> : null}
-              {item.label}
-            </div>
-          )
-        })}
+        <div className="relative z-10 grid h-full grid-cols-3">
+          {stepItems.map((item, index) => {
+            const isFilled = index <= currentStepIndex
+            const isActive = index === currentStepIndex
+            const isComplete = index < currentStepIndex
+
+            return (
+              <div
+                key={item.id}
+                className={[
+                  "flex h-full items-center justify-center gap-x-1.5 px-2 text-[10px] font-semibold uppercase tracking-[0.08em] transition-colors duration-300",
+                  isFilled ? "text-ui-bg-base" : "text-ui-fg-muted",
+                  isActive ? "drop-shadow-sm" : "",
+                ].join(" ")}
+                aria-current={isActive ? "step" : undefined}
+              >
+                {isComplete ? <CheckCircle2 className="size-3" /> : null}
+                {item.label}
+              </div>
+            )
+          })}
+        </div>
       </div>
     </div>
   )

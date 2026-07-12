@@ -1,60 +1,36 @@
 import { copyFile, readFile, stat } from "node:fs/promises"
-import { extname, isAbsolute, join, relative, resolve } from "node:path"
+import { extname, join } from "node:path"
 
+import type { ApprovedSnapshotFile } from "./file-eligibility-policy"
 import type { SnapshotFileManifest } from "./snapshot-manifest"
 import { sha256 } from "./snapshot-manifest"
 
-type NormalizedSnapshotFile = {
-  relativePath: string
-  absolutePath: string
-}
-
-const missingFileRecord = (relativePath: string): SnapshotFileManifest => {
+const missingFileRecord = (
+  file: ApprovedSnapshotFile,
+  reason = "File did not exist at snapshot time"
+): SnapshotFileManifest => {
   return {
-    path: relativePath,
+    path: file.relativePath,
     status: "missing",
     snapshot_path: null,
     size: 0,
     sha256: null,
-    missing_reason: "File did not exist at snapshot time",
+    missing_reason: reason,
+    policy_version: file.eligibility.policy_version,
+    workspace_scope: file.scope,
+    eligibility_scopes: [file.scope],
+    validated_at: new Date().toISOString(),
+    validation_result: "eligible",
+    file_kind: file.fileKind,
+    original_relative_path: file.relativePath,
+    eligibility: {
+      eligible: true,
+      scope: file.scope,
+      reason_code: file.eligibility.reason_code,
+      policy_version: file.eligibility.policy_version,
+      size_check: file.eligibility.size_check,
+    },
   }
-}
-
-const isInsideWorkspace = (workspaceRoot: string, absolutePath: string) => {
-  const relativePath = relative(workspaceRoot, absolutePath)
-
-  return Boolean(relativePath) &&
-    !relativePath.startsWith("..") &&
-    !isAbsolute(relativePath)
-}
-
-export const normalizeSelectedPath = (
-  workspaceRoot: string,
-  selectedPath: string
-): NormalizedSnapshotFile => {
-  const normalizedPath = selectedPath.replace(/\\/g, "/").trim()
-
-  if (!normalizedPath) {
-    throw new Error("Every file path must be a non-empty string")
-  }
-
-  const absolutePath = resolve(workspaceRoot, normalizedPath)
-
-  if (!isInsideWorkspace(workspaceRoot, absolutePath)) {
-    throw new Error(`File path escapes workspace root: ${selectedPath}`)
-  }
-
-  return {
-    relativePath: relative(workspaceRoot, absolutePath).replace(/\\/g, "/"),
-    absolutePath,
-  }
-}
-
-export const normalizeSelectedPaths = (
-  workspaceRoot: string,
-  selectedPaths: string[]
-) => {
-  return selectedPaths.map((file) => normalizeSelectedPath(workspaceRoot, file))
 }
 
 const getSnapshotFileName = (relativePath: string) => {
@@ -64,7 +40,7 @@ const getSnapshotFileName = (relativePath: string) => {
 }
 
 export const captureSnapshotFiles = async (
-  files: NormalizedSnapshotFile[],
+  files: ApprovedSnapshotFile[],
   filesDirectory: string
 ) => {
   const capturedFiles: SnapshotFileManifest[] = []
@@ -78,7 +54,7 @@ export const captureSnapshotFiles = async (
       const fileStat = await stat(file.absolutePath)
 
       if (!fileStat.isFile()) {
-        capturedFiles.push(missingFileRecord(file.relativePath))
+        capturedFiles.push(missingFileRecord(file, "Approved path was no longer a regular file at capture time"))
         continue
       }
 
@@ -93,9 +69,23 @@ export const captureSnapshotFiles = async (
         size: copiedContent.byteLength,
         sha256: sha256(copiedContent),
         missing_reason: null,
+        policy_version: file.eligibility.policy_version,
+        workspace_scope: file.scope,
+        eligibility_scopes: [file.scope],
+        validated_at: new Date().toISOString(),
+        validation_result: "eligible",
+        file_kind: file.fileKind,
+        original_relative_path: file.relativePath,
+        eligibility: {
+          eligible: true,
+          scope: file.scope,
+          reason_code: file.eligibility.reason_code,
+          policy_version: file.eligibility.policy_version,
+          size_check: file.eligibility.size_check,
+        },
       })
     } catch {
-      capturedFiles.push(missingFileRecord(file.relativePath))
+      capturedFiles.push(missingFileRecord(file, "File capture failed after eligibility validation"))
     }
   }
 

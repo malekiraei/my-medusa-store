@@ -1,4 +1,3 @@
-import React from "react"
 import { Badge, Button, Container, Text } from "../../../../ui/vendor"
 
 export type BundleInfo = {
@@ -109,7 +108,7 @@ export const BundleList = ({
           </div>
         </Container>
       ))}
-    </
+    </div>
   )
 }
 
